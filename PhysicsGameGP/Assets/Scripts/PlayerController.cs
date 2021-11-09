@@ -16,9 +16,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 dir;
     private float dragLength;
-    [SerializeField] private float maxLength = 10f;
+    [Tooltip("Max drag length multiplier by screen height")]
+    [SerializeField] private float maxLength = 0.5f;
     [SerializeField] private bool clearForceOnShoot = false;
-    [Tooltip("¨0f clears all the force, 1f keeps all the force")]
+    [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
 
@@ -45,8 +46,7 @@ public class PlayerController : MonoBehaviour
         {
             InputController.ShootRequested = false;
             
-            Debug.Log("shootRequested");
-            clickPosition = InputController.MouseWorldPoint;
+            clickPosition = InputController.LookVector;
         }
         
         if (InputController.ShootCancelled)
@@ -54,13 +54,14 @@ public class PlayerController : MonoBehaviour
             InputController.ShootCancelled = false;
             shootRequested = true;
 
-            Debug.Log("ShootCancelled");
-            
-            Vector2 dragPosition = InputController.MouseWorldPoint;
-            Vector2 v = clickPosition - dragPosition;
-            
+            Vector2 dragPosition = InputController.LookVector;
+
+            Vector2 startPos = clickPosition / Screen.height;
+            Vector2 endPos = dragPosition / Screen.height;
+            Vector2 v = startPos - endPos;
+
             dir = v.normalized;
-            force = dir * Mathf.Lerp(0f, maxLength, v.magnitude);
+            force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
             force = Vector2.ClampMagnitude(force, maxForce);
         }
     }
