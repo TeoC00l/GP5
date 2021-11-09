@@ -41,8 +41,7 @@ public class PlayerController : MonoBehaviour
         lines = GetComponentsInChildren<LineRenderer>();
         
         basicAbility = GetComponent<AbilityPutt>();
-        currentAbility = GetComponent<AbilityBlink>();
-        slowMo = GetComponent<AbilitySlowMo>();
+        currentAbility = GetComponent<AbilitySlowMo>();
     }
 
     private void Update()
@@ -73,7 +72,14 @@ public class PlayerController : MonoBehaviour
             {
                 if (currentAbility.activateOnAim)
                 {
-                    slowMo.OnActivate();
+                    currentAbility.OnActivate();
+                }
+            }
+            else
+            {
+                if (!currentAbility.activateOnAim)
+                {
+                    currentAbility.OnActivate();
                 }
             }
             

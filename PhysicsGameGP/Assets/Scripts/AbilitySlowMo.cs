@@ -8,6 +8,7 @@ public class AbilitySlowMo : Ability
     
     public override void OnActivate()
     {
+        Debug.Log("Here");
         OnExecute();
         StartCoroutine(DeactivateAfterTime());
     }
@@ -26,6 +27,7 @@ public class AbilitySlowMo : Ability
 
     private IEnumerator DeactivateAfterTime()
     {
-        yield return new WaitForSeconds(timeLength);
+        yield return new WaitForSecondsRealtime(timeLength);
+        OnDeactivate();
     }
 }
