@@ -13,6 +13,8 @@ public class InputController : MonoBehaviour
     public static Vector2 LookVector => instance.controls.Gameplay.MousePosition.ReadValue<Vector2>();
     public static bool ShootRequested;
     public static bool ShootCancelled;
+    public static bool NextAbility;
+    public static bool ResetRequested;
     
     private void Awake()
     {
@@ -50,17 +52,31 @@ public class InputController : MonoBehaviour
         ShootCancelled = true;
     }
 
+    private void OnNextAbilityPerformed(InputAction.CallbackContext ctx)
+    {
+        NextAbility = true;
+    }
+    
+    private void OnResetPerformed(InputAction.CallbackContext ctx)
+    {
+        ResetRequested = true;
+    }
+
     #region Internal Subscription
     private void SubscribeToInput()
     {
         controls.Gameplay.Shoot.performed += OnShootPerformed;
         controls.Gameplay.Shoot.canceled += OnShootCancelled;
+        controls.Gameplay.NextAbility.performed += OnNextAbilityPerformed;
+        controls.Gameplay.Reset.performed += OnResetPerformed;
     }
         
     private void UnsubscribeFromInput()
     {
         controls.Gameplay.Shoot.performed -= OnShootPerformed;
         controls.Gameplay.Shoot.canceled -= OnShootCancelled;
+        controls.Gameplay.NextAbility.performed -= OnNextAbilityPerformed;
+        controls.Gameplay.Reset.performed -= OnResetPerformed;
     }
     #endregion
     }

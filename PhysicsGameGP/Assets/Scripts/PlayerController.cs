@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D body;
     private LineRenderer[] lines;
     
+    [SerializeField] private Transform spawnPosition = default;
+    
     [SerializeField] private float maxForce = 10f;
 
     private bool shootRequested = false;
@@ -25,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
     [SerializeField] private float groundCheckDistance = 1f;
-    [SerializeField] private LayerMask layerMask = default;
+    [SerializeField] private LayerMask groundCheckMask = default;
 
     public Vector2 force;
 
@@ -33,7 +35,9 @@ public class PlayerController : MonoBehaviour
 
     private Ability basicAbility;
     private Ability currentAbility;
-    private Ability slowMo;
+    [SerializeField] private List<Ability> abilities = new List<Ability>();
+
+    private int currentAbilityIndex = 0;
     
     private void Awake()
     {
@@ -41,7 +45,7 @@ public class PlayerController : MonoBehaviour
         lines = GetComponentsInChildren<LineRenderer>();
         
         basicAbility = GetComponent<AbilityPutt>();
-        currentAbility = GetComponent<AbilitySlowMo>();
+        currentAbility = abilities[0];
     }
 
     private void Update()
@@ -66,7 +70,6 @@ public class PlayerController : MonoBehaviour
         {
             InputController.ShootRequested = false;
             isAiming = true;
-            // player.OnStartAiming();
 
             if (GroundCheck())
             {
@@ -77,7 +80,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                if (!currentAbility.activateOnAim)
+                if (currentAbility.activateOnAim)
                 {
                     currentAbility.OnActivate();
                 }
@@ -91,7 +94,6 @@ public class PlayerController : MonoBehaviour
             InputController.ShootCancelled = false;
             isAiming = false;
             shootRequested = true;
-            // player.OnShoot();
 
             if (GroundCheck())
             {
@@ -113,6 +115,25 @@ public class PlayerController : MonoBehaviour
             dir = v.normalized;
             force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
             force = Vector2.ClampMagnitude(force, maxForce);
+        }
+
+        if (InputController.NextAbility)
+        {
+            InputController.NextAbility = false;
+            
+            Debug.Log(currentAbilityIndex);
+            
+            currentAbility = abilities[currentAbilityIndex++];
+            if (currentAbilityIndex >= abilities.Count)
+                currentAbilityIndex = 0;
+        }
+
+        if (InputController.ResetRequested)
+        {
+            InputController.ResetRequested = false;
+
+            body.MovePosition(spawnPosition.position);
+            body.velocity = Vector2.zero;
         }
     }
 
@@ -155,7 +176,7 @@ public class PlayerController : MonoBehaviour
 
     private bool GroundCheck()
     {
-        if (Physics2D.Raycast(body.position, Vector2.down, groundCheckDistance, layerMask))
+        if (Physics2D.Raycast(body.position, Vector2.down, groundCheckDistance, groundCheckMask))
             return true;
         return false;
     }

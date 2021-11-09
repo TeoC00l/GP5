@@ -8,7 +8,7 @@ public class AbilitySlowMo : Ability
     
     public override void OnActivate()
     {
-        Debug.Log("Here");
+        Debug.Log("SlowMo");
         OnExecute();
         StartCoroutine(DeactivateAfterTime());
     }

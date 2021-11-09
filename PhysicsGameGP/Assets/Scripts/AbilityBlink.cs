@@ -5,16 +5,16 @@ public class AbilityBlink : Ability
 
     public override void OnActivate()
     {
-        
+        Debug.Log("Blink");
     }
 
     protected override void OnExecute()
     {
-        throw new System.NotImplementedException();
+        
     }
 
     protected override void OnDeactivate()
     {
-        throw new System.NotImplementedException();
+        
     }
 }

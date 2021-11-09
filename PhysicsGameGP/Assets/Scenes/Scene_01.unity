@@ -123,6 +123,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &832013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 832014}
+  m_Layer: 0
+  m_Name: SpawnPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &832014
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832013}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.2821913, y: 5.6131887, z: 0.4227857}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &204403680
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +627,7 @@ GameObject:
   - component: {fileID: 474794192}
   - component: {fileID: 474794193}
   - component: {fileID: 474794194}
+  - component: {fileID: 474794195}
   m_Layer: 2
   m_Name: Player
   m_TagString: Untagged
@@ -671,15 +703,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae1ab7d563b00c443b6c0f275cb34ec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPosition: {fileID: 832014}
   maxForce: 10
   maxLength: 0.25
   clearForceOnShoot: 0
   clearForceAmount: 0.5
   groundCheckDistance: 1
-  layerMask:
+  groundCheckMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 0
   force: {x: 0, y: 0}
+  abilities:
+  - {fileID: 474794193}
+  - {fileID: 474794194}
+  - {fileID: 474794195}
 --- !u!114 &474794191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -734,7 +771,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activateOnAim: 1
   slowMoSpeed: 0.2
-  timeLength: 2
+  timeLength: 0.2
+--- !u!114 &474794195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474794186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9269c2a9049d46ae9b273053cad12b79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnAim: 0
+  blastMultiplier: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
