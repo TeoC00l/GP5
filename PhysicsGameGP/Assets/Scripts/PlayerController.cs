@@ -24,15 +24,25 @@ public class PlayerController : MonoBehaviour
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
+    [SerializeField] private float groundCheckDistance = 1f;
+    [SerializeField] private LayerMask layerMask = default;
 
-    private Vector2 force;
+    public Vector2 force;
 
     private bool isAiming;
 
+    private Ability basicAbility;
+    private Ability currentAbility;
+    private Ability slowMo;
+    
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         lines = GetComponentsInChildren<LineRenderer>();
+        
+        basicAbility = GetComponent<AbilityPutt>();
+        currentAbility = GetComponent<AbilityBlink>();
+        slowMo = GetComponent<AbilitySlowMo>();
     }
 
     private void Update()
@@ -57,7 +67,15 @@ public class PlayerController : MonoBehaviour
         {
             InputController.ShootRequested = false;
             isAiming = true;
-            player.OnStartAiming();
+            // player.OnStartAiming();
+
+            if (GroundCheck())
+            {
+                if (currentAbility.activateOnAim)
+                {
+                    slowMo.OnActivate();
+                }
+            }
             
             clickPosition = InputController.LookVector;
         }
@@ -67,14 +85,25 @@ public class PlayerController : MonoBehaviour
             InputController.ShootCancelled = false;
             isAiming = false;
             shootRequested = true;
-            player.OnShoot();
+            // player.OnShoot();
 
+            if (GroundCheck())
+            {
+                basicAbility.OnActivate();
+            } else 
+            {
+                if (!currentAbility.activateOnAim)
+                {
+                    currentAbility.OnActivate();
+                }
+            }
+            
             Vector2 dragPosition = InputController.LookVector;
-
+            
             Vector2 startPos = clickPosition / Screen.height;
             Vector2 endPos = dragPosition / Screen.height;
             Vector2 v = startPos - endPos;
-
+            
             dir = v.normalized;
             force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
             force = Vector2.ClampMagnitude(force, maxForce);
@@ -85,12 +114,7 @@ public class PlayerController : MonoBehaviour
     {
         shootRequested = false;
 
-        if (clearForceOnShoot)
-        {
-            body.velocity = Vector3.Lerp(Vector3.zero, body.velocity, clearForceAmount);
-        }
         
-        body.AddForce(force, ForceMode2D.Impulse);
     }
 
     private void VisualiseTrajectory()
@@ -121,6 +145,13 @@ public class PlayerController : MonoBehaviour
         float tmp = Mathf.Lerp(0f, maxForce, force.magnitude / maxForce);
         lines[1].startWidth = tmp * 0.01f + 0.1f;
         lines[1].endWidth = tmp * 0.01f + 0.2f;
+    }
+
+    private bool GroundCheck()
+    {
+        if (Physics2D.Raycast(body.position, Vector2.down, groundCheckDistance, layerMask))
+            return true;
+        return false;
     }
 
     private void OnDrawGizmos()

@@ -227,7 +227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 214609298}
   - component: {fileID: 214609299}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -368,7 +368,7 @@ GameObject:
   - component: {fileID: 414181977}
   - component: {fileID: 414181979}
   - component: {fileID: 414181978}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -450,7 +450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 442081361}
   - component: {fileID: 442081362}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ForceIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -593,7 +593,10 @@ GameObject:
   - component: {fileID: 474794187}
   - component: {fileID: 474794191}
   - component: {fileID: 474794190}
-  m_Layer: 0
+  - component: {fileID: 474794192}
+  - component: {fileID: 474794193}
+  - component: {fileID: 474794194}
+  m_Layer: 2
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -672,6 +675,11 @@ MonoBehaviour:
   maxLength: 0.25
   clearForceOnShoot: 0
   clearForceAmount: 0.5
+  groundCheckDistance: 1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  force: {x: 0, y: 0}
 --- !u!114 &474794191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -684,6 +692,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2dc5c9f49a1bec4da07f9056c3e0121, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &474794192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474794186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1adc4a3e6f487fb5caddb9fdb7f6ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnAim: 0
+  clearForceOnShoot: 0
+  clearForceAmount: 0
+--- !u!114 &474794193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474794186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09401fa4ca894487846baa05ab5546dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnAim: 0
+--- !u!114 &474794194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474794186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bf83ad004974a008010350ee5084a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnAim: 1
+  slowMoSpeed: 0.2
+  timeLength: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,6 +746,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -768,6 +820,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05503d83339da554f9a1c157f8fdf58f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetBody: {fileID: 474794187}
+  offset: {x: 0, y: 2.5, z: -10}
+  smoothTime: 0.1
+  forwardAmount: 5
+  maxVelocity: 10
 --- !u!1 &540255337
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,7 +880,7 @@ GameObject:
   m_Component:
   - component: {fileID: 765971739}
   - component: {fileID: 765971740}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
