@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 
-public class AbilityBlink : MonoBehaviour, IAbility
+public class AbilityBlink : Ability
 {
-    
-    
-    public void Setup()
+
+    public override void OnActivate()
     {
         
     }
-    
-    public void Activate()
+
+    protected override void OnExecute()
     {
-        
+        throw new System.NotImplementedException();
+    }
+
+    protected override void OnDeactivate()
+    {
+        throw new System.NotImplementedException();
     }
 }
