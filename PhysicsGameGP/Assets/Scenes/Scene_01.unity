@@ -1529,17 +1529,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
-      propertyPath: hitFriction
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: spawnPosition
       value: 
       objectReference: {fileID: 832014}
-    - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
-      propertyPath: groundFriction
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2520667274060324318, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: m_Name
       value: Player

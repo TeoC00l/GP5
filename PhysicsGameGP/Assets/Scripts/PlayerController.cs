@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 dir;
     private float dragLength;
+    [SerializeField] private float indicatorLengthMultiplier = 1f;
     [Tooltip("Max drag length multiplier by screen height")]
     [SerializeField] private float maxLength = 0.5f;
     [SerializeField] private bool clearForceOnShoot = false;
@@ -172,12 +173,12 @@ public class PlayerController : MonoBehaviour
         force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
         force = Vector2.ClampMagnitude(force, maxForce);
         trajectoryPoints.Add(transform.position);
-        trajectoryPoints.Add(transform.position + (Vector3)force);
+        trajectoryPoints.Add(transform.position + (Vector3)force * indicatorLengthMultiplier);
         lines[0].SetPositions(trajectoryPoints.ToArray());
         
         
         forcePoints.Add(transform.position);
-        forcePoints.Add(transform.position - (Vector3)force);
+        forcePoints.Add(transform.position - (Vector3)force * indicatorLengthMultiplier);
         lines[1].SetPositions(forcePoints.ToArray());
         float tmp = Mathf.Lerp(0f, maxForce, force.magnitude / maxForce);
         lines[1].startWidth = tmp * 0.01f + 0.1f;

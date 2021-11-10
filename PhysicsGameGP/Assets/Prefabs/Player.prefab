@@ -246,6 +246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 0}
   maxForce: 10
+  indicatorLengthMultiplier: 0.5
   maxLength: 0.25
   clearForceOnShoot: 0
   clearForceAmount: 0.5
@@ -259,7 +260,7 @@ MonoBehaviour:
   - {fileID: 2520667274060324293}
   - {fileID: 2520667274060324294}
   - {fileID: 2520667274060324295}
-  groundFriction: 0
+  groundFriction: 1
   hitFriction: 0
 --- !u!114 &2520667274060324292
 MonoBehaviour:
