@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class PlayerController : MonoBehaviour
 {
     private Player player;
@@ -26,7 +25,8 @@ public class PlayerController : MonoBehaviour
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
-    [SerializeField] private float groundCheckDistance = 1f;
+    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] private float groundCheckRadius = 0.5f;
     [SerializeField] private LayerMask groundCheckMask = default;
 
     public Vector2 force;
@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private List<Ability> abilities = new List<Ability>();
 
     private int currentAbilityIndex = 0;
+
+    private RaycastHit2D groundHit;
+    [SerializeField] private float groundFriction = 0f;
+    [Range(0f, 1f)][SerializeField] private float hitFriction = 0f;
     
     private void Awake()
     {
@@ -62,6 +66,12 @@ public class PlayerController : MonoBehaviour
             lines[0].gameObject.SetActive(false);
             lines[1].gameObject.SetActive(false);
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if (GroundCheck())
+            GroundFriction();
     }
 
     private void Input()
@@ -174,10 +184,27 @@ public class PlayerController : MonoBehaviour
         lines[1].endWidth = tmp * 0.01f + 0.2f;
     }
 
+    private void GroundFriction()
+    {
+        // Thanks to Wiktor Ravndal for helping with this mess
+        Vector2 velocityPlaneProjection = Vector3.ProjectOnPlane(body.velocity, groundHit.normal);
+        float speedAlongFloor = Vector2.Dot(body.velocity, velocityPlaneProjection.normalized);
+        float friction = groundFriction * speedAlongFloor * speedAlongFloor;
+        body.AddForce(-velocityPlaneProjection.normalized * friction);
+        // float friction = minFriction + groundFriction * speedAlongFloor * speedAlongFloor;
+        // friction = Mathf.Min(friction, speedAlongFloor);
+        // body.velocity += -velocityPlaneProjection.normalized * friction;
+    }
+
     private bool GroundCheck()
     {
-        if (Physics2D.Raycast(body.position, Vector2.down, groundCheckDistance, groundCheckMask))
+        RaycastHit2D hit = Physics2D.CircleCast(body.position, groundCheckRadius, 
+            Vector2.down, groundCheckDistance, groundCheckMask);
+        if (hit)
+        {
+            groundHit = hit;
             return true;
+        }
         return false;
     }
 
