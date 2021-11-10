@@ -215,7 +215,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6e0dfc8d78efec84299aa0b78a9d406d, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -246,10 +246,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 0}
   maxForce: 10
+  indicatorLengthMultiplier: 0.5
   maxLength: 0.25
   clearForceOnShoot: 0
   clearForceAmount: 0.5
-  groundCheckDistance: 1
+  groundCheckDistance: 0.1
+  groundCheckRadius: 0.5
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 1
@@ -258,6 +260,8 @@ MonoBehaviour:
   - {fileID: 2520667274060324293}
   - {fileID: 2520667274060324294}
   - {fileID: 2520667274060324295}
+  groundFriction: 1
+  hitFriction: 0
 --- !u!114 &2520667274060324292
 MonoBehaviour:
   m_ObjectHideFlags: 0
