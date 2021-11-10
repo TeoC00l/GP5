@@ -56,9 +56,6 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         Input();
-        
-        if (shootRequested)
-            Fire();
 
         if (isAiming)
             VisualiseTrajectory();
@@ -77,6 +74,7 @@ public class PlayerController : MonoBehaviour
 
     private void Input()
     {
+        // LMB Down
         if (InputController.ShootRequested)
         {
             InputController.ShootRequested = false;
@@ -100,6 +98,7 @@ public class PlayerController : MonoBehaviour
             clickPosition = InputController.LookVector;
         }
         
+        // LMB Up
         if (InputController.ShootCancelled)
         {
             InputController.ShootCancelled = false;
@@ -117,15 +116,15 @@ public class PlayerController : MonoBehaviour
                 }
             }
             
-            Vector2 dragPosition = InputController.LookVector;
-            
-            Vector2 startPos = clickPosition / Screen.height;
-            Vector2 endPos = dragPosition / Screen.height;
-            Vector2 v = startPos - endPos;
-            
-            dir = v.normalized;
-            force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
-            force = Vector2.ClampMagnitude(force, maxForce);
+            // Vector2 dragPosition = InputController.LookVector;
+            //
+            // Vector2 startPos = clickPosition / Screen.height;
+            // Vector2 endPos = dragPosition / Screen.height;
+            // Vector2 v = startPos - endPos;
+            //
+            // dir = v.normalized;
+            // force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
+            // force = Vector2.ClampMagnitude(force, maxForce);
         }
 
         if (InputController.NextAbility)
@@ -146,13 +145,6 @@ public class PlayerController : MonoBehaviour
             body.MovePosition(spawnPosition.position);
             body.velocity = Vector2.zero;
         }
-    }
-
-    private void Fire()
-    {
-        shootRequested = false;
-
-        
     }
 
     private void VisualiseTrajectory()

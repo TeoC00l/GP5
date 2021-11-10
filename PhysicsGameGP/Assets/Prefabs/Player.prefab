@@ -290,6 +290,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activateOnAim: 0
+  clearForceOnShoot: 1
+  clearForceAmount: 0
+  range: 10
+  blinkToLastMouseLocation: 0
+  blinkToAimDirection: 1
+  groundCheckDistance: 0.1
+  groundCheckRadius: 0.5
+  groundCheckMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &2520667274060324294
 MonoBehaviour:
   m_ObjectHideFlags: 0

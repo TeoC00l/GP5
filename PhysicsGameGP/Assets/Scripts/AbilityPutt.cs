@@ -20,13 +20,14 @@ public class AbilityPutt : Ability
 
     protected override void OnExecute()
     {
-        Vector2 force = playerController.force;
-        
+        // Clear Velocity
         if (clearForceOnShoot)
         {
             body.velocity = Vector3.Lerp(Vector3.zero, body.velocity, clearForceAmount);
         }
         
+        // Shoot
+        Vector2 force = playerController.force;
         body.AddForce(force, ForceMode2D.Impulse);
     }
 
