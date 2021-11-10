@@ -38,6 +38,18 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2701323307
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: 'Walkable Objects '
+    uniqueID: 644363143
+    locked: 0
+  - name: Level Ground
+    uniqueID: 4201590627
+    locked: 0
+  - name: Player
+    uniqueID: 986888857
     locked: 0
