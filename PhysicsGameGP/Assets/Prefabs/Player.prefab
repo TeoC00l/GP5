@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 0}
-  maxForce: 10
+  maxForce: 20
   indicatorLengthMultiplier: 0.5
   maxLength: 0.25
   clearForceOnShoot: 0

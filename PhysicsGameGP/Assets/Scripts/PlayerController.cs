@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PlayerController : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float groundCheckRadius = 0.5f;
     [SerializeField] private LayerMask groundCheckMask = default;
+    [SerializeField] private float maxGroundAngle = 45f;
 
     public Vector2 force;
 
@@ -43,6 +45,14 @@ public class PlayerController : MonoBehaviour
     private RaycastHit2D groundHit;
     [SerializeField] private float groundFriction = 0f;
     [Range(0f, 1f)][SerializeField] private float hitFriction = 0f;
+
+    [SerializeField] private RandomWeight[] abilityDrops = default;
+
+    private Queue<Abilities> abilityQueue = new Queue<Abilities>();
+    public Queue<Abilities> GetAbilityQueue() { return abilityQueue; }
+
+    [SerializeField] private int maxAirShotAmount = 1;
+    private int currentAirShotAmount = 0;
     
     private void Awake()
     {
@@ -53,8 +63,16 @@ public class PlayerController : MonoBehaviour
         currentAbility = abilities[0];
     }
 
+    private void Start()
+    {
+        abilityQueue.Enqueue(GetRandomAbility());
+        abilityQueue.Enqueue(GetRandomAbility());
+    }
+
     private void Update()
     {
+        Debug.Log(abilityQueue.Count);
+        
         Input();
 
         if (isAiming)
@@ -112,19 +130,16 @@ public class PlayerController : MonoBehaviour
             {
                 if (!currentAbility.activateOnAim)
                 {
-                    currentAbility.OnActivate();
+                    if (currentAirShotAmount < maxAirShotAmount)
+                    {
+                        currentAbility = GetAbilityByEnum(abilityQueue.Dequeue());
+                        abilityQueue.Enqueue(GetRandomAbility());
+                        
+                        currentAirShotAmount++;
+                        currentAbility.OnActivate();
+                    }
                 }
             }
-            
-            // Vector2 dragPosition = InputController.LookVector;
-            //
-            // Vector2 startPos = clickPosition / Screen.height;
-            // Vector2 endPos = dragPosition / Screen.height;
-            // Vector2 v = startPos - endPos;
-            //
-            // dir = v.normalized;
-            // force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
-            // force = Vector2.ClampMagnitude(force, maxForce);
         }
 
         if (InputController.NextAbility)
@@ -193,17 +208,76 @@ public class PlayerController : MonoBehaviour
     {
         RaycastHit2D hit = Physics2D.CircleCast(body.position, groundCheckRadius, 
             Vector2.down, groundCheckDistance, groundCheckMask);
-        if (hit)
+        if (hit && Mathf.Atan2(hit.normal.y, hit.normal.x) > maxGroundAngle * Mathf.Deg2Rad)
         {
             groundHit = hit;
+            currentAirShotAmount = 0;
             return true;
         }
         return false;
+    }
+
+    private Abilities GetRandomAbility()
+    {
+        float total = 0f;
+        foreach (var drop in abilityDrops)
+        {
+            total += drop.value;
+        }
+
+        // float total = abilityDrops[abilityDrops.Length - 1].value;
+        
+        float random = Random.Range(0f, total);
+        Debug.Log("AbilityDrop: " + random);
+        foreach (var drop in abilityDrops)
+        {
+            if (random <= drop.value)
+            {
+                return drop.ability;
+            }
+            random -= drop.value;
+        }
+
+        return Abilities.Putt;
+    }
+
+    private Ability GetAbilityByEnum(Abilities value)
+    {
+        Debug.Log(value);
+        switch (value)
+        {
+            case Abilities.Putt:
+                return GetComponent<AbilityPutt>();
+            case Abilities.Blast:
+                return GetComponent<AbilityBlast>();
+            case Abilities.Blink:
+                return GetComponent<AbilityBlink>();
+            case Abilities.SlowMo:
+                return GetComponent<AbilitySlowMo>();
+            default:
+                return GetComponent<AbilityPutt>();
+        }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(InputController.MouseWorldPoint, 5f);
         Gizmos.DrawLine(Vector3.zero, force);
+    }
+
+    [Serializable]
+    struct RandomWeight
+    {
+        public Abilities ability;
+        public float value;
+    }
+
+    public enum Abilities
+    {
+        Putt = 0,
+        Blast = 1,
+        Blink = 2,
+        SlowMo = 3,
+        
     }
 }
