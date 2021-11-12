@@ -16,8 +16,7 @@ public class HUDManager : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(playerController.GetAbilityQueue().Count);
-        Queue<PlayerController.Abilities> abilitiesQueue = new Queue<PlayerController.Abilities>(playerController.GetAbilityQueue());
+        Queue<Abilities> abilitiesQueue = new Queue<Abilities>(playerController.GetAbilityQueue());
         string abilityText = abilitiesQueue.Dequeue().ToString();
         currentAbilityText.text = abilityText;
         

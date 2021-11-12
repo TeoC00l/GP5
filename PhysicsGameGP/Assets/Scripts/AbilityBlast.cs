@@ -8,7 +8,6 @@ public class AbilityBlast : Ability
     
     public override void OnActivate()
     {
-        Debug.Log("Blast");
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
         
@@ -24,7 +23,7 @@ public class AbilityBlast : Ability
         body.AddForce(force, ForceMode2D.Impulse);
     }
 
-    protected override void OnDeactivate()
+    public override void OnDeactivate()
     {
         
     }

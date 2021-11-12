@@ -157,9 +157,10 @@ GameObject:
   - component: {fileID: 2520667274060324293}
   - component: {fileID: 2520667274060324294}
   - component: {fileID: 2520667274060324295}
+  - component: {fileID: 4440262443048832313}
   m_Layer: 2
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -255,6 +256,7 @@ MonoBehaviour:
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 1
+  maxGroundAngle: 45
   force: {x: 0, y: 0}
   abilities:
   - {fileID: 2520667274060324293}
@@ -262,6 +264,8 @@ MonoBehaviour:
   - {fileID: 2520667274060324295}
   groundFriction: 1
   hitFriction: 0
+  abilityDrops: []
+  maxAirShotAmount: 1
 --- !u!114 &2520667274060324292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +333,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activateOnAim: 0
   blastMultiplier: 2
+--- !u!114 &4440262443048832313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520667274060324318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3530eda81754e24b5c7e3701626744d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnAim: 0
 --- !u!1 &2520667274093016388
 GameObject:
   m_ObjectHideFlags: 0

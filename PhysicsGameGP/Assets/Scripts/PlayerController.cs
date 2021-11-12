@@ -14,8 +14,6 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private float maxForce = 10f;
 
-    private bool shootRequested = false;
-
     private Vector2 clickPosition;
 
     private Vector2 dir;
@@ -23,10 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float indicatorLengthMultiplier = 1f;
     [Tooltip("Max drag length multiplier by screen height")]
     [SerializeField] private float maxLength = 0.5f;
-    [SerializeField] private bool clearForceOnShoot = false;
-    [Tooltip("0f clears all the force, 1f keeps all the force")]
-    [Range(0f,1f)]
-    [SerializeField] private float clearForceAmount = 0f;
+    
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float groundCheckRadius = 0.5f;
     [SerializeField] private LayerMask groundCheckMask = default;
@@ -38,13 +33,9 @@ public class PlayerController : MonoBehaviour
 
     private Ability basicAbility;
     private Ability currentAbility;
-    [SerializeField] private List<Ability> abilities = new List<Ability>();
-
-    private int currentAbilityIndex = 0;
 
     private RaycastHit2D groundHit;
     [SerializeField] private float groundFriction = 0f;
-    [Range(0f, 1f)][SerializeField] private float hitFriction = 0f;
 
     [SerializeField] private RandomWeight[] abilityDrops = default;
 
@@ -53,6 +44,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private int maxAirShotAmount = 1;
     private int currentAirShotAmount = 0;
+    public void ResetCurrentAirShotAmount() { currentAirShotAmount = 0; }
     
     private void Awake()
     {
@@ -60,7 +52,7 @@ public class PlayerController : MonoBehaviour
         lines = GetComponentsInChildren<LineRenderer>();
         
         basicAbility = GetComponent<AbilityPutt>();
-        currentAbility = abilities[0];
+        currentAbility = GetComponent<AbilityPutt>();
     }
 
     private void Start()
@@ -71,8 +63,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(abilityQueue.Count);
-        
         Input();
 
         if (isAiming)
@@ -95,7 +85,6 @@ public class PlayerController : MonoBehaviour
         // LMB Down
         if (InputController.ShootRequested)
         {
-            InputController.ShootRequested = false;
             isAiming = true;
 
             if (GroundCheck())
@@ -119,19 +108,25 @@ public class PlayerController : MonoBehaviour
         // LMB Up
         if (InputController.ShootCancelled)
         {
-            InputController.ShootCancelled = false;
             isAiming = false;
-            shootRequested = true;
 
+            //TODO: GroundCheck skip or true when spiked to a wall
             if (GroundCheck())
             {
+                if (currentAbility.deactivateOnShot)
+                    currentAbility.OnDeactivate();
+                
                 basicAbility.OnActivate();
             } else 
             {
                 if (!currentAbility.activateOnAim)
                 {
+                    
                     if (currentAirShotAmount < maxAirShotAmount)
                     {
+                        if (currentAbility.deactivateOnShot)
+                            currentAbility.OnDeactivate();
+
                         currentAbility = GetAbilityByEnum(abilityQueue.Dequeue());
                         abilityQueue.Enqueue(GetRandomAbility());
                         
@@ -142,21 +137,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (InputController.NextAbility)
-        {
-            InputController.NextAbility = false;
-            
-            Debug.Log(currentAbilityIndex);
-            
-            currentAbility = abilities[currentAbilityIndex++];
-            if (currentAbilityIndex >= abilities.Count)
-                currentAbilityIndex = 0;
-        }
-
         if (InputController.ResetRequested)
         {
-            InputController.ResetRequested = false;
-
             body.MovePosition(spawnPosition.position);
             body.velocity = Vector2.zero;
         }
@@ -225,10 +207,7 @@ public class PlayerController : MonoBehaviour
             total += drop.value;
         }
 
-        // float total = abilityDrops[abilityDrops.Length - 1].value;
-        
         float random = Random.Range(0f, total);
-        Debug.Log("AbilityDrop: " + random);
         foreach (var drop in abilityDrops)
         {
             if (random <= drop.value)
@@ -243,7 +222,7 @@ public class PlayerController : MonoBehaviour
 
     private Ability GetAbilityByEnum(Abilities value)
     {
-        Debug.Log(value);
+        // Debug.Log(value);
         switch (value)
         {
             case Abilities.Putt:
@@ -254,6 +233,8 @@ public class PlayerController : MonoBehaviour
                 return GetComponent<AbilityBlink>();
             case Abilities.SlowMo:
                 return GetComponent<AbilitySlowMo>();
+            case Abilities.Spike:
+                return GetComponent<AbilitySpike>();
             default:
                 return GetComponent<AbilityPutt>();
         }
@@ -270,14 +251,5 @@ public class PlayerController : MonoBehaviour
     {
         public Abilities ability;
         public float value;
-    }
-
-    public enum Abilities
-    {
-        Putt = 0,
-        Blast = 1,
-        Blink = 2,
-        SlowMo = 3,
-        
     }
 }

@@ -72,7 +72,7 @@ public class AbilityBlink : Ability
         body.AddForce(force, ForceMode2D.Impulse);
     }
 
-    protected override void OnDeactivate()
+    public override void OnDeactivate()
     {
         
     }

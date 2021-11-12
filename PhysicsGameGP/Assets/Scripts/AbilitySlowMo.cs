@@ -8,7 +8,6 @@ public class AbilitySlowMo : Ability
     
     public override void OnActivate()
     {
-        Debug.Log("SlowMo");
         OnExecute();
         StartCoroutine(DeactivateAfterTime());
     }
@@ -19,7 +18,7 @@ public class AbilitySlowMo : Ability
         Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
     }
 
-    protected override void OnDeactivate()
+    public override void OnDeactivate()
     {
         Time.timeScale = 1f;
         Time.fixedDeltaTime = 0.02f;

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputController : MonoBehaviour
+public class InputController : MonoBehaviour, Controls.IGameplayActions
 {
     private Controls controls;
     private Camera cam;
@@ -10,7 +10,7 @@ public class InputController : MonoBehaviour
     private static InputController instance;
 
     public static Vector3 MouseWorldPoint;
-    public static Vector2 LookVector => instance.controls.Gameplay.MousePosition.ReadValue<Vector2>();
+    public static Vector2 LookVector;
     public static bool ShootRequested;
     public static bool ShootCancelled;
     public static bool NextAbility;
@@ -19,6 +19,7 @@ public class InputController : MonoBehaviour
     private void Awake()
     {
         controls = new Controls();
+        controls.Gameplay.SetCallbacks(this);
         instance = this;
             
         cam = Camera.main;
@@ -27,13 +28,13 @@ public class InputController : MonoBehaviour
     private void OnEnable()
     {
         controls.Enable();
-        SubscribeToInput();
+        // SubscribeToInput();
     }
 
     private void OnDisable()
     {
         controls.Disable();
-        UnsubscribeFromInput();
+        // UnsubscribeFromInput();
     }
 
     private void Update()
@@ -41,42 +42,78 @@ public class InputController : MonoBehaviour
         Vector3 mouseWorldPoint = cam.ScreenToWorldPoint(new Vector3(LookVector.x, LookVector.y, 0f));
         MouseWorldPoint = mouseWorldPoint;
     }
+    //
+    // private void OnShootPerformed(InputAction.CallbackContext ctx)
+    // {
+    //     ShootRequested = true;
+    // }
+    //
+    // private void OnShootCancelled(InputAction.CallbackContext ctx)
+    // {
+    //     ShootCancelled = true;
+    // }
+    //
+    // private void OnNextAbilityPerformed(InputAction.CallbackContext ctx)
+    // {
+    //     NextAbility = true;
+    // }
+    //
+    // private void OnResetPerformed(InputAction.CallbackContext ctx)
+    // {
+    //     ResetRequested = true;
+    // }
+    //
+    // #region Internal Subscription
+    // private void SubscribeToInput()
+    // {
+    //     controls.Gameplay.Shoot.performed += OnShootPerformed;
+    //     controls.Gameplay.Shoot.canceled += OnShootCancelled;
+    //     controls.Gameplay.NextAbility.performed += OnNextAbilityPerformed;
+    //     controls.Gameplay.Reset.performed += OnResetPerformed;
+    // }
+    //     
+    // private void UnsubscribeFromInput()
+    // {
+    //     controls.Gameplay.Shoot.performed -= OnShootPerformed;
+    //     controls.Gameplay.Shoot.canceled -= OnShootCancelled;
+    //     controls.Gameplay.NextAbility.performed -= OnNextAbilityPerformed;
+    //     controls.Gameplay.Reset.performed -= OnResetPerformed;
+    // }
+    // #endregion
 
-    private void OnShootPerformed(InputAction.CallbackContext ctx)
+    private void LateUpdate()
     {
-        ShootRequested = true;
+        ConsumeInputs();
     }
 
-    private void OnShootCancelled(InputAction.CallbackContext ctx)
+    public void OnShoot(InputAction.CallbackContext context)
     {
-        ShootCancelled = true;
+        if (context.performed)
+            ShootRequested = true;
+        else if (context.canceled)
+            ShootCancelled = true;
     }
 
-    private void OnNextAbilityPerformed(InputAction.CallbackContext ctx)
+    public void OnMousePosition(InputAction.CallbackContext context)
     {
-        NextAbility = true;
-    }
-    
-    private void OnResetPerformed(InputAction.CallbackContext ctx)
-    {
-        ResetRequested = true;
+        LookVector = context.ReadValue<Vector2>();
     }
 
-    #region Internal Subscription
-    private void SubscribeToInput()
+    public void OnNextAbility(InputAction.CallbackContext context)
     {
-        controls.Gameplay.Shoot.performed += OnShootPerformed;
-        controls.Gameplay.Shoot.canceled += OnShootCancelled;
-        controls.Gameplay.NextAbility.performed += OnNextAbilityPerformed;
-        controls.Gameplay.Reset.performed += OnResetPerformed;
-    }
         
-    private void UnsubscribeFromInput()
+    }
+
+    public void OnReset(InputAction.CallbackContext context)
     {
-        controls.Gameplay.Shoot.performed -= OnShootPerformed;
-        controls.Gameplay.Shoot.canceled -= OnShootCancelled;
-        controls.Gameplay.NextAbility.performed -= OnNextAbilityPerformed;
-        controls.Gameplay.Reset.performed -= OnResetPerformed;
+        if (context.performed)
+            ResetRequested = true;
     }
-    #endregion
+
+    public void ConsumeInputs()
+    {
+        ShootRequested = false;
+        ShootCancelled = false;
+        ResetRequested = false;
     }
+}

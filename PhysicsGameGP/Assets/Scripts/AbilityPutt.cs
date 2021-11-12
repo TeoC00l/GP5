@@ -12,6 +12,7 @@ public class AbilityPutt : Ability
     
     public override void OnActivate()
     {
+        Debug.Log("Putt OnActivate");
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
 
@@ -31,7 +32,7 @@ public class AbilityPutt : Ability
         body.AddForce(force, ForceMode2D.Impulse);
     }
 
-    protected override void OnDeactivate()
+    public override void OnDeactivate()
     {
         
     }

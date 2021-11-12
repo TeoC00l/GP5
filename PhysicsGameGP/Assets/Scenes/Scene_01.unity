@@ -2029,7 +2029,7 @@ PrefabInstance:
       objectReference: {fileID: 832014}
     - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: abilityDrops.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: abilityDrops.Array.data[0].value
@@ -2048,6 +2048,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
+      propertyPath: abilityDrops.Array.data[4].value
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: abilityDrops.Array.data[1].ability
       value: 1
       objectReference: {fileID: 0}
@@ -2058,6 +2062,10 @@ PrefabInstance:
     - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: abilityDrops.Array.data[3].ability
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2520667274060324314, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
+      propertyPath: abilityDrops.Array.data[4].ability
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2520667274060324318, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: m_Name
@@ -2070,6 +2078,10 @@ PrefabInstance:
     - target: {fileID: 2520667274060324319, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
       propertyPath: m_Constraints
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4440262443048832313, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
+      propertyPath: deactivateOnShot
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 262bf35acf7521143af474ad71c8d8a0, type: 3}
