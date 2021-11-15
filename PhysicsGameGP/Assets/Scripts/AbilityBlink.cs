@@ -19,12 +19,20 @@ public class AbilityBlink : Ability
     [SerializeField] private float groundCheckRadius = 0.5f;
     [SerializeField] private LayerMask groundCheckMask = default;
     
-    public override void OnActivate()
+    private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
         col = GetComponent<CircleCollider2D>();
+    }
+
+    public override void OnAim()
+    {
         
+    }
+
+    public override void OnShoot()
+    {
         OnExecute();
     }
 

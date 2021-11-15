@@ -7,12 +7,22 @@ public class AbilitySpike : Ability
 
     private bool isActive = false;
     private bool spikesActive = false;
+
+    private float gravityScale;
     
-    public override void OnActivate()
+    private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
+    }
 
+    public override void OnAim()
+    {
+        
+    }
+
+    public override void OnShoot()
+    {
         Vector2 force = playerController.force;
         body.AddForce(force, ForceMode2D.Impulse);
         
@@ -23,7 +33,8 @@ public class AbilitySpike : Ability
     {
         Debug.Log("Spike OnExecute");
         spikesActive = true;
-        body.isKinematic = true;
+        gravityScale = body.gravityScale;
+        body.gravityScale = 0f;
         body.velocity = Vector2.zero;
         playerController.ResetCurrentAirShotAmount();
     }
@@ -32,7 +43,7 @@ public class AbilitySpike : Ability
     {
         isActive = false;
         spikesActive = false;
-        body.isKinematic = false;
+        body.gravityScale = gravityScale;
         // Remove visuals when player shoots again
     }
 
@@ -44,10 +55,4 @@ public class AbilitySpike : Ability
             OnExecute();
         }
     }
-    
-    // private void FixedUpdate()
-    // {
-    //     if (spikesActive)
-    //         body.velocity = Vector2.zero;
-    // }
 }

@@ -2,12 +2,11 @@ using UnityEngine;
 
 public abstract class Ability : MonoBehaviour
 {
-    [Tooltip("If false, will activate OnShoot (on release of button)")]
-    public bool activateOnAim;
     [Tooltip("Deactivate this ability when shooting again.")]
     public bool deactivateOnShot;
-    
-    public abstract void OnActivate();
+
+    public abstract void OnAim();
+    public abstract void OnShoot();
     protected abstract void OnExecute();
     public abstract void OnDeactivate();
 }

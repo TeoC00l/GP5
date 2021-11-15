@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class AbilityPutt : Ability
@@ -9,13 +10,20 @@ public class AbilityPutt : Ability
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
-    
-    public override void OnActivate()
+
+    private void Awake()
     {
-        Debug.Log("Putt OnActivate");
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
+    }
 
+    public override void OnAim()
+    {
+        
+    }
+
+    public override void OnShoot()
+    {
         OnExecute();
     }
 

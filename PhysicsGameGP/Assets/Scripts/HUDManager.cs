@@ -17,10 +17,10 @@ public class HUDManager : MonoBehaviour
     private void Update()
     {
         Queue<Abilities> abilitiesQueue = new Queue<Abilities>(playerController.GetAbilityQueue());
-        string abilityText = abilitiesQueue.Dequeue().ToString();
+        string abilityText = abilitiesQueue.TryDequeue(out Abilities ability) ? ability.ToString() : "";
         currentAbilityText.text = abilityText;
         
-        abilityText = abilitiesQueue.Dequeue().ToString();
+        abilityText = abilitiesQueue.TryDequeue(out ability) ? ability.ToString() : "";
         nextAbilityText.text = abilityText;
     }
 }

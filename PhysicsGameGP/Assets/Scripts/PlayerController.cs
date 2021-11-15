@@ -8,48 +8,54 @@ public class PlayerController : MonoBehaviour
 {
     private Player player;
     private Rigidbody2D body;
-    private LineRenderer[] lines;
+    private IndicatorManager indicatorManager;
     
+    [Header("Respawn")]
     [SerializeField] private Transform spawnPosition = default;
     
+    [Header("Controller")]
     [SerializeField] private float maxForce = 10f;
 
     private Vector2 clickPosition;
-
     private Vector2 dir;
+    [HideInInspector] public Vector2 force;
     private float dragLength;
-    [SerializeField] private float indicatorLengthMultiplier = 1f;
+    
+    private bool isAiming;
+    
     [Tooltip("Max drag length multiplier by screen height")]
     [SerializeField] private float maxLength = 0.5f;
     
+    [SerializeField] private int maxAirShotAmount = 1;
+    private int currentAirShotAmount = 0;
+    public void ResetCurrentAirShotAmount() { currentAirShotAmount = 0; }
+    
+    [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float groundCheckRadius = 0.5f;
     [SerializeField] private LayerMask groundCheckMask = default;
     [SerializeField] private float maxGroundAngle = 45f;
-
-    public Vector2 force;
-
-    private bool isAiming;
-
-    private Ability basicAbility;
-    private Ability currentAbility;
-
+    
     private RaycastHit2D groundHit;
+    
+    [Header("Friction")]
     [SerializeField] private float groundFriction = 0f;
-
+    
+    [Header("Abilities")]
+    [SerializeField] private bool useRandomAbilitySystem = false;
+    [SerializeField] private int abilitiesInQueueAmount = 2;
     [SerializeField] private RandomWeight[] abilityDrops = default;
 
     private Queue<Abilities> abilityQueue = new Queue<Abilities>();
     public Queue<Abilities> GetAbilityQueue() { return abilityQueue; }
 
-    [SerializeField] private int maxAirShotAmount = 1;
-    private int currentAirShotAmount = 0;
-    public void ResetCurrentAirShotAmount() { currentAirShotAmount = 0; }
+    private Ability basicAbility;
+    private Ability currentAbility;
     
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
-        lines = GetComponentsInChildren<LineRenderer>();
+        indicatorManager = GetComponent<IndicatorManager>();
         
         basicAbility = GetComponent<AbilityPutt>();
         currentAbility = GetComponent<AbilityPutt>();
@@ -57,20 +63,28 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        abilityQueue.Enqueue(GetRandomAbility());
-        abilityQueue.Enqueue(GetRandomAbility());
+        if (useRandomAbilitySystem)
+        {
+            for (int i = 0; i < abilitiesInQueueAmount; i++)
+            {
+                abilityQueue.Enqueue(GetRandomAbility());
+            }
+        }
     }
 
     private void Update()
     {
         Input();
+        CalculateInput();
 
         if (isAiming)
-            VisualiseTrajectory();
+        {
+            indicatorManager.VisualisePower(force, maxForce);
+            indicatorManager.VisualiseTrajectory(force);
+        }
         else
         {
-            lines[0].gameObject.SetActive(false);
-            lines[1].gameObject.SetActive(false);
+            indicatorManager.DisableIndicators();
         }
     }
 
@@ -88,20 +102,10 @@ public class PlayerController : MonoBehaviour
             isAiming = true;
 
             if (GroundCheck())
-            {
-                if (currentAbility.activateOnAim)
-                {
-                    currentAbility.OnActivate();
-                }
-            }
+                basicAbility.OnAim();
             else
-            {
-                if (currentAbility.activateOnAim)
-                {
-                    currentAbility.OnActivate();
-                }
-            }
-            
+                currentAbility.OnAim();
+
             clickPosition = InputController.LookVector;
         }
         
@@ -116,23 +120,22 @@ public class PlayerController : MonoBehaviour
                 if (currentAbility.deactivateOnShot)
                     currentAbility.OnDeactivate();
                 
-                basicAbility.OnActivate();
+                basicAbility.OnShoot();
             } else 
             {
-                if (!currentAbility.activateOnAim)
+                if (currentAirShotAmount < maxAirShotAmount)
                 {
-                    
-                    if (currentAirShotAmount < maxAirShotAmount)
-                    {
-                        if (currentAbility.deactivateOnShot)
-                            currentAbility.OnDeactivate();
+                    if (currentAbility.deactivateOnShot)
+                        currentAbility.OnDeactivate();
 
-                        currentAbility = GetAbilityByEnum(abilityQueue.Dequeue());
+                    currentAbility = GetAbilityByEnum(
+                        abilityQueue.TryDequeue(out Abilities ability) ? ability : Abilities.Putt);
+
+                    if (useRandomAbilitySystem)
                         abilityQueue.Enqueue(GetRandomAbility());
                         
-                        currentAirShotAmount++;
-                        currentAbility.OnActivate();
-                    }
+                    currentAirShotAmount++;
+                    currentAbility.OnShoot();
                 }
             }
         }
@@ -144,36 +147,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void VisualiseTrajectory()
+    private void CalculateInput()
     {
-        lines[0].gameObject.SetActive(true);
-        lines[1].gameObject.SetActive(true);
-        
-        List<Vector3> trajectoryPoints = new List<Vector3>();
-        List<Vector3> forcePoints = new List<Vector3>();
-        
         Vector2 dragPosition = InputController.LookVector;
-
+        
         Vector2 startPos = clickPosition / Screen.height;
         Vector2 endPos = dragPosition / Screen.height;
         Vector2 v = startPos - endPos;
-
+        
         dir = v.normalized;
         force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
         force = Vector2.ClampMagnitude(force, maxForce);
-        trajectoryPoints.Add(transform.position);
-        trajectoryPoints.Add(transform.position + (Vector3)force * indicatorLengthMultiplier);
-        lines[0].SetPositions(trajectoryPoints.ToArray());
-        
-        
-        forcePoints.Add(transform.position);
-        forcePoints.Add(transform.position - (Vector3)force * indicatorLengthMultiplier);
-        lines[1].SetPositions(forcePoints.ToArray());
-        float tmp = Mathf.Lerp(0f, maxForce, force.magnitude / maxForce);
-        lines[1].startWidth = tmp * 0.01f + 0.1f;
-        lines[1].endWidth = tmp * 0.01f + 0.2f;
     }
-
+    
     private void GroundFriction()
     {
         // Thanks to Wiktor Ravndal for helping with this mess
@@ -222,7 +208,6 @@ public class PlayerController : MonoBehaviour
 
     private Ability GetAbilityByEnum(Abilities value)
     {
-        // Debug.Log(value);
         switch (value)
         {
             case Abilities.Putt:
@@ -240,6 +225,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void AddAbility(Abilities value)
+    {
+        abilityQueue.Enqueue(value);
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(InputController.MouseWorldPoint, 5f);
@@ -253,3 +243,33 @@ public class PlayerController : MonoBehaviour
         public float value;
     }
 }
+
+// private void VisualiseTrajectory()
+// {
+//     lines[0].gameObject.SetActive(true);
+//     lines[1].gameObject.SetActive(true);
+//     
+//     List<Vector3> trajectoryPoints = new List<Vector3>();
+//     List<Vector3> forcePoints = new List<Vector3>();
+//     
+//     Vector2 dragPosition = InputController.LookVector;
+//     
+//     Vector2 startPos = clickPosition / Screen.height;
+//     Vector2 endPos = dragPosition / Screen.height;
+//     Vector2 v = startPos - endPos;
+//     
+//     dir = v.normalized;
+//     force = dir * Mathf.Lerp(0f, maxForce, v.magnitude / maxLength);
+//     force = Vector2.ClampMagnitude(force, maxForce);
+//     trajectoryPoints.Add(transform.position);
+//     trajectoryPoints.Add(transform.position + (Vector3)force * indicatorLengthMultiplier);
+//     lines[0].SetPositions(trajectoryPoints.ToArray());
+//     
+//     
+//     forcePoints.Add(transform.position);
+//     forcePoints.Add(transform.position - (Vector3)force * indicatorLengthMultiplier);
+//     lines[1].SetPositions(forcePoints.ToArray());
+//     float tmp = Mathf.Lerp(0f, maxForce, force.magnitude / maxForce);
+//     lines[1].startWidth = tmp * 0.01f + 0.1f;
+//     lines[1].endWidth = tmp * 0.01f + 0.2f;
+// }
