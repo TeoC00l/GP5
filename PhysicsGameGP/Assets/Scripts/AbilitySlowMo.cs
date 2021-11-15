@@ -23,20 +23,19 @@ public class AbilitySlowMo : Ability
 
     public override void OnAim()
     {
-        OnExecute();
+        Time.timeScale = 0.2f;
+        Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
     }
 
     public override void OnShoot()
-    {
+    { 
+        OnExecute();
         if (deactivateAfterTime)
             StartCoroutine(DeactivateAfterTime());
     }
 
     protected override void OnExecute()
     {
-        Time.timeScale = 0.2f;
-        Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
-        
         // Clear Velocity
         if (clearForceOnShoot)
         {

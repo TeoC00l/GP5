@@ -331,16 +331,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 0}
   maxForce: 20
+  force: {x: 0, y: 0}
   maxLength: 0.25
+  maxAirShotAmount: 1
   groundCheckDistance: 0.1
   groundCheckRadius: 0.5
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 1
   maxGroundAngle: 45
-  force: {x: 0, y: 0}
   groundFriction: 1
   useRandomAbilitySystem: 1
+  abilitiesInQueueAmount: 2
   abilityDrops:
   - ability: 0
     value: 50
@@ -351,8 +353,7 @@ MonoBehaviour:
   - ability: 3
     value: 10
   - ability: 4
-    value: 50
-  maxAirShotAmount: 1
+    value: 10
 --- !u!114 &2520667274060324292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -366,6 +367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
+  deactivateOnNextShot: 0
   clearForceOnShoot: 0
   clearForceAmount: 0
 --- !u!114 &2520667274060324293
@@ -381,6 +383,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
+  deactivateOnNextShot: 0
   clearForceOnShoot: 1
   clearForceAmount: 0
   range: 10
@@ -404,6 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deactivateOnShot: 1
+  deactivateOnNextShot: 0
   deactivateAfterTime: 0
   slowMoSpeed: 0.2
   timeLength: 0.2
@@ -422,6 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
+  deactivateOnNextShot: 0
   blastMultiplier: 2
   clearForceOnShoot: 0
   clearForceAmount: 0
@@ -437,7 +442,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3530eda81754e24b5c7e3701626744d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deactivateOnShot: 1
+  deactivateOnShot: 0
+  deactivateOnNextShot: 1
 --- !u!114 &5129874373658973498
 MonoBehaviour:
   m_ObjectHideFlags: 0

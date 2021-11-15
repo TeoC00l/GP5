@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
 
     private Ability basicAbility;
     private Ability currentAbility;
+    private Ability previousAbility;
     
     private void Awake()
     {
@@ -58,7 +59,8 @@ public class PlayerController : MonoBehaviour
         indicatorManager = GetComponent<IndicatorManager>();
         
         basicAbility = GetComponent<AbilityPutt>();
-        currentAbility = GetComponent<AbilityPutt>();
+        currentAbility = basicAbility;
+        previousAbility = basicAbility;
     }
 
     private void Start()
@@ -100,11 +102,22 @@ public class PlayerController : MonoBehaviour
         if (InputController.ShootRequested)
         {
             isAiming = true;
-
+            
             if (GroundCheck())
                 basicAbility.OnAim();
             else
-                currentAbility.OnAim();
+            {
+                if (currentAirShotAmount < maxAirShotAmount)
+                {
+                    currentAbility = GetAbilityByEnum(
+                        abilityQueue.TryDequeue(out Abilities ability) ? ability : Abilities.Putt);
+
+                    if (useRandomAbilitySystem)
+                        abilityQueue.Enqueue(GetRandomAbility());
+                    
+                    currentAbility.OnAim();
+                }
+            }
 
             clickPosition = InputController.LookVector;
         }
@@ -114,26 +127,20 @@ public class PlayerController : MonoBehaviour
         {
             isAiming = false;
 
+            if (currentAbility.deactivateOnShot)
+                currentAbility.OnDeactivate();
+            if (previousAbility.deactivateOnNextShot)
+                previousAbility.OnDeactivate();
+            previousAbility = currentAbility;
+            
             //TODO: GroundCheck skip or true when spiked to a wall
             if (GroundCheck())
             {
-                if (currentAbility.deactivateOnShot)
-                    currentAbility.OnDeactivate();
-                
                 basicAbility.OnShoot();
             } else 
             {
                 if (currentAirShotAmount < maxAirShotAmount)
                 {
-                    if (currentAbility.deactivateOnShot)
-                        currentAbility.OnDeactivate();
-
-                    currentAbility = GetAbilityByEnum(
-                        abilityQueue.TryDequeue(out Abilities ability) ? ability : Abilities.Putt);
-
-                    if (useRandomAbilitySystem)
-                        abilityQueue.Enqueue(GetRandomAbility());
-                        
                     currentAirShotAmount++;
                     currentAbility.OnShoot();
                 }

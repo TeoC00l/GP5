@@ -2,8 +2,10 @@ using UnityEngine;
 
 public abstract class Ability : MonoBehaviour
 {
-    [Tooltip("Deactivate this ability when shooting again.")]
+    [Tooltip("Deactivate this ability when shooting.")]
     public bool deactivateOnShot;
+    [Tooltip("Deactivate this ability when shooting again after shooting once.")]
+    public bool deactivateOnNextShot;
 
     public abstract void OnAim();
     public abstract void OnShoot();

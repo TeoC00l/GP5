@@ -14,6 +14,7 @@ public class AbilitySpike : Ability
     {
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
+        gravityScale = body.gravityScale;
     }
 
     public override void OnAim()
@@ -33,7 +34,6 @@ public class AbilitySpike : Ability
     {
         Debug.Log("Spike OnExecute");
         spikesActive = true;
-        gravityScale = body.gravityScale;
         body.gravityScale = 0f;
         body.velocity = Vector2.zero;
         playerController.ResetCurrentAirShotAmount();
