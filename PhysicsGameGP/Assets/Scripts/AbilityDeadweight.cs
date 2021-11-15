@@ -1,18 +1,17 @@
 using UnityEngine;
 
-public class AbilitySpike : Ability
+public class AbilityDeadweight : Ability
 {
     private Rigidbody2D body;
     private PlayerController playerController;
-
-    private bool isActive = false;
-    private bool spikesActive = false;
-
-    private float gravityScale;
+    
+    [SerializeField] private float gravityMultiplier = 2f;
     
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
+
+    private float gravityScale;
     
     private void Awake()
     {
@@ -22,7 +21,7 @@ public class AbilitySpike : Ability
 
         deactivateOnNextShot = true;
     }
-
+    
     public override void OnAim()
     {
         
@@ -30,6 +29,13 @@ public class AbilitySpike : Ability
 
     public override void OnShoot()
     {
+        OnExecute();
+    }
+
+    protected override void OnExecute()
+    {
+        body.gravityScale = gravityMultiplier;
+        
         // Clear Velocity
         if (clearForceAmount != 0f)
         {
@@ -39,33 +45,10 @@ public class AbilitySpike : Ability
         // Shoot
         Vector2 force = playerController.force;
         body.AddForce(force, ForceMode2D.Impulse);
-        
-        isActive = true;
-    }
-
-    protected override void OnExecute()
-    {
-        Debug.Log("Spike OnExecute");
-        spikesActive = true;
-        body.gravityScale = 0f;
-        body.velocity = Vector2.zero;
-        playerController.ResetCurrentAirShotAmount();
     }
 
     public override void OnDeactivate()
     {
-        isActive = false;
-        spikesActive = false;
         body.gravityScale = gravityScale;
-        // Remove visuals when player shoots again
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        Debug.Log("Spike OnCollisionEnter2D");
-        if (isActive)
-        {
-            OnExecute();
-        }
     }
 }

@@ -6,12 +6,11 @@ public class AbilityBlink : Ability
     private PlayerController playerController;
     private CircleCollider2D col;
     
-    [SerializeField] private bool clearForceOnShoot = false;
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
     
-    [SerializeField] private float range = 0f;
+    [SerializeField] private float range = 1f;
     [SerializeField] private bool blinkToLastMouseLocation = false;
     [SerializeField] private bool blinkToAimDirection = true;
     
@@ -62,7 +61,6 @@ public class AbilityBlink : Ability
 
             if (hit)
             {
-                Debug.Log("Hit");
                 newPosition = hit.point - blinkDir * col.radius;
             }
         }
@@ -70,7 +68,7 @@ public class AbilityBlink : Ability
         body.MovePosition(newPosition);
         
         // Clear Velocity
-        if (clearForceOnShoot)
+        if (clearForceAmount != 0f)
         {
             body.velocity = Vector3.Lerp(Vector3.zero, body.velocity, clearForceAmount);
         }

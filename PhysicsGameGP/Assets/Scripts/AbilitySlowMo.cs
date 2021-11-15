@@ -10,7 +10,6 @@ public class AbilitySlowMo : Ability
     [SerializeField] private float slowMoSpeed = 0.2f;
     [SerializeField] private float timeLength = 2f;
     
-    [SerializeField] private bool clearForceOnShoot = false;
     [Tooltip("0f clears all the force, 1f keeps all the force")]
     [Range(0f,1f)]
     [SerializeField] private float clearForceAmount = 0f;
@@ -19,6 +18,8 @@ public class AbilitySlowMo : Ability
     {
         body = GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
+
+        deactivateOnShot = true;
     }
 
     public override void OnAim()
@@ -37,7 +38,7 @@ public class AbilitySlowMo : Ability
     protected override void OnExecute()
     {
         // Clear Velocity
-        if (clearForceOnShoot)
+        if (clearForceAmount != 0f)
         {
             body.velocity = Vector3.Lerp(Vector3.zero, body.velocity, clearForceAmount);
         }

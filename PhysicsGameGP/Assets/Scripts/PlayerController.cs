@@ -29,6 +29,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int maxAirShotAmount = 1;
     private int currentAirShotAmount = 0;
     public void ResetCurrentAirShotAmount() { currentAirShotAmount = 0; }
+    [SerializeField] private bool lockInputUntilAtRest = true;
+    [SerializeField] private float maxRestingVelocity = 0.5f;
+
+    [Header("Visuals")] 
+    [SerializeField] private Material playerMaterial; 
+    [SerializeField] private Material playerlockedMaterial;
+
+    private Renderer playerRenderer;
     
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 0.1f;
@@ -57,6 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         body = GetComponent<Rigidbody2D>();
         indicatorManager = GetComponent<IndicatorManager>();
+        playerRenderer = GetComponentInChildren<Renderer>();
         
         basicAbility = GetComponent<AbilityPutt>();
         currentAbility = basicAbility;
@@ -76,8 +85,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Input();
-        CalculateInput();
+        if (lockInputUntilAtRest)
+        {
+            if (currentAirShotAmount < maxAirShotAmount || RestingCheck())
+            {
+                playerRenderer.material = playerMaterial;
+                Input();
+                CalculateInput();
+            }
+            else
+            {
+                playerRenderer.material = playerlockedMaterial;
+            }
+        }
+        else
+        {
+            Input();
+            CalculateInput();
+        }
 
         if (isAiming)
         {
@@ -186,10 +211,21 @@ public class PlayerController : MonoBehaviour
         if (hit && Mathf.Atan2(hit.normal.y, hit.normal.x) > maxGroundAngle * Mathf.Deg2Rad)
         {
             groundHit = hit;
-            currentAirShotAmount = 0;
+            if (!lockInputUntilAtRest)
+                currentAirShotAmount = 0;
             return true;
         }
         return false;
+    }
+
+    private bool RestingCheck()
+    {
+        //TODO: if wallstuck by using spike groundcheck will be false, fix
+        // if (!GroundCheck()) return false;
+        if (body.velocity.magnitude >= maxRestingVelocity) return false;
+        
+        currentAirShotAmount = 0;
+        return true;
     }
 
     private Abilities GetRandomAbility()
@@ -227,6 +263,10 @@ public class PlayerController : MonoBehaviour
                 return GetComponent<AbilitySlowMo>();
             case Abilities.Spike:
                 return GetComponent<AbilitySpike>();
+            case Abilities.Deadweight:
+                return GetComponent<AbilityDeadweight>();
+            case Abilities.Platform:
+                return GetComponent<AbilityPlatform>();
             default:
                 return GetComponent<AbilityPutt>();
         }

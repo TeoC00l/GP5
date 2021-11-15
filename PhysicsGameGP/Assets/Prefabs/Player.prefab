@@ -242,6 +242,8 @@ GameObject:
   - component: {fileID: 2520667274060324295}
   - component: {fileID: 4440262443048832313}
   - component: {fileID: 5129874373658973498}
+  - component: {fileID: 886781141456613587}
+  - component: {fileID: 5757477813066255955}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
@@ -334,6 +336,10 @@ MonoBehaviour:
   force: {x: 0, y: 0}
   maxLength: 0.25
   maxAirShotAmount: 1
+  lockInputUntilAtRest: 1
+  maxRestingVelocity: 0.5
+  playerMaterial: {fileID: 2100000, guid: 67c7f10e05e96e8438abe2dbab8d5afa, type: 2}
+  playerlockedMaterial: {fileID: 2100000, guid: 36194d662f0f5534dbd8591f6f3c976d, type: 2}
   groundCheckDistance: 0.1
   groundCheckRadius: 0.5
   groundCheckMask:
@@ -347,12 +353,16 @@ MonoBehaviour:
   - ability: 0
     value: 50
   - ability: 1
-    value: 30
+    value: 10
   - ability: 2
     value: 10
   - ability: 3
     value: 10
   - ability: 4
+    value: 10
+  - ability: 5
+    value: 10
+  - ability: 6
     value: 10
 --- !u!114 &2520667274060324292
 MonoBehaviour:
@@ -457,6 +467,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   indicatorLengthMultiplier: 0.5
+--- !u!114 &886781141456613587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520667274060324318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fcb96f766c543ef8dc41ffaf69b5703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deactivateOnShot: 0
+  deactivateOnNextShot: 0
+  gravityMultiplier: 2
+  clearForceOnShoot: 0
+  clearForceAmount: 0
+--- !u!114 &5757477813066255955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520667274060324318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3d62d388a04e6ebdb7b07caf9dd497, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deactivateOnShot: 0
+  deactivateOnNextShot: 0
+  range: 2
+  groundCheckDistance: 0.1
+  groundCheckRadius: 0.5
+  groundCheckMask:
+    serializedVersion: 2
+    m_Bits: 1
+  platformPrefab: {fileID: 8710747143025355439, guid: a995236875bfdba4caa72c686d4b3782, type: 3}
 --- !u!1 &2520667274093016388
 GameObject:
   m_ObjectHideFlags: 0
