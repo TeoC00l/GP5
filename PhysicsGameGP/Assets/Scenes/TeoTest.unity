@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usePause: 1
-  pauseTimeInSeconds: 3
-  runTimeInSeconds: 5
+  pauseTimeInSeconds: 2.19
+  runTimeInSeconds: 4
 --- !u!61 &63553507
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -170,7 +170,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 1
   m_UsedByComposite: 0
-  m_Offset: {x: -1.7521911, y: 1.3073349}
+  m_Offset: {x: -2.790402, y: -3.1706321}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -181,7 +181,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 6.0435762, y: 3.8157983}
+  m_Size: {x: 3.9671547, y: 3.749744}
   m_EdgeRadius: 0
 --- !u!249 &63553508
 AreaEffector2D:
@@ -197,8 +197,8 @@ AreaEffector2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_UseGlobalAngle: 0
-  m_ForceAngle: 79.23024
-  m_ForceMagnitude: 400
+  m_ForceAngle: 0
+  m_ForceMagnitude: 100
   m_ForceVariation: 1
   m_ForceTarget: 0
   m_Drag: 0
@@ -210,16 +210,16 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 63553505}
-  m_LocalRotation: {x: -0, y: -0, z: 0.6376273, w: 0.7703451}
-  m_LocalPosition: {x: 11.3, y: 2.44, z: 0}
-  m_LocalScale: {x: 1.000102, y: 0.99986476, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.38558403, w: 0.92267275}
+  m_LocalPosition: {x: 12.3, y: 4.17, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 860583530}
   - {fileID: 2058714700}
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 79.23}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45.36}
 --- !u!1 &651674059
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,10 +461,10 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 8.37878, y: 4.287833, z: 0}
-  - {x: 12.127367, y: 3.5748026, z: 0}
-  - {x: 10.998047, y: -2.3623226, z: 0}
-  - {x: 7.24946, y: -1.6492918, z: 0}
+  - {x: 12.655065, y: 2.6854496, z: 0}
+  - {x: 15.323141, y: 0.0506924, z: 0}
+  - {x: 12.535621, y: -2.77208, z: 0}
+  - {x: 9.867544, y: -0.13732275, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -687,8 +687,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: 11.201583, y: -1.4547013, z: 0}
+  - {x: 13.989103, y: 1.3680704, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -697,7 +697,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 3.8157983
+        value: 3.749744
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -706,7 +706,7 @@ LineRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 3.8157983
+        value: 3.749744
         inSlope: 0
         outSlope: 0
         tangentMode: 0

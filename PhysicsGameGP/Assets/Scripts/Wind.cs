@@ -73,7 +73,7 @@ public class Wind : MonoBehaviour
         directionLineRenderer.endWidth = size.y;
         
         effector = GetComponent<AreaEffector2D>();
-        effector.forceAngle = transform.rotation.eulerAngles.z;
+        effector.forceAngle = 0;
 
         hitPlayer = false;
         
@@ -93,7 +93,7 @@ public class Wind : MonoBehaviour
     {
         RaycastHit2D hit;
 
-        float degrees = effector.forceAngle;
+        float degrees = transform.rotation.z;
         float radians = degrees * Mathf.Deg2Rad;
         
         Vector2 dir = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
@@ -128,7 +128,6 @@ public class Wind : MonoBehaviour
         ClearRenderers();
         effector.forceMagnitude = 0f;
 
-        Debug.Log("yo");
         yield return new WaitForSeconds(pauseTimeInSeconds);
         
         StartCoroutine(Blow());
@@ -136,7 +135,8 @@ public class Wind : MonoBehaviour
 
     void DrawDebugLines()
     {
-        float degrees = effector.forceAngle;
+        float degrees = transform.rotation.eulerAngles.z;
+        Debug.Log(degrees);
         float radians = degrees * Mathf.Deg2Rad;
 
         Vector2 dir = (new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized);
@@ -389,7 +389,6 @@ public class Wind : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        
     }
 #endif
 
