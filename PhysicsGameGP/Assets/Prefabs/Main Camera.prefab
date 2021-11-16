@@ -101,4 +101,4 @@ MonoBehaviour:
   offset: {x: 0, y: 2.5, z: -10}
   smoothTime: 0.1
   forwardAmount: 5
-  maxVelocity: 10
+  maxVelocity: 50

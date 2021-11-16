@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     private Player player;
     private Rigidbody2D body;
+    private Rigidbody2D connectedBody;
     private IndicatorManager indicatorManager;
     
     [Header("Respawn")]
@@ -31,6 +32,9 @@ public class PlayerController : MonoBehaviour
     public void ResetCurrentAirShotAmount() { currentAirShotAmount = 0; }
     [SerializeField] private bool lockInputUntilAtRest = true;
     [SerializeField] private float maxRestingVelocity = 0.5f;
+    private bool waitingToRest = false;
+    [SerializeField] private float collisionIgnoreTime = 0.1f;
+    private bool ignoreCollision = false;
 
     [Header("Visuals")] 
     [SerializeField] private Material playerMaterial; 
@@ -85,9 +89,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(GroundCheck());
+        
         if (lockInputUntilAtRest)
         {
-            if (currentAirShotAmount < maxAirShotAmount || RestingCheck())
+            if ((!waitingToRest && currentAirShotAmount < maxAirShotAmount && !GroundCheck()) || 
+                (RestingCheck() && GroundCheck()))
             {
                 playerRenderer.material = playerMaterial;
                 Input();
@@ -95,6 +102,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                isAiming = false;
                 playerRenderer.material = playerlockedMaterial;
             }
         }
@@ -125,6 +133,13 @@ public class PlayerController : MonoBehaviour
     {
         if (GroundCheck())
             GroundFriction();
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.gameObject.CompareTag("Player"))
+            if (!ignoreCollision)
+                waitingToRest = true;
     }
 
     private void Input()
@@ -168,6 +183,7 @@ public class PlayerController : MonoBehaviour
             if (GroundCheck())
             {
                 basicAbility.OnShoot();
+                StartCoroutine(InputLockCollisionIgnoreTimer());
             } else 
             {
                 if (currentAirShotAmount < maxAirShotAmount)
@@ -198,7 +214,11 @@ public class PlayerController : MonoBehaviour
         Vector2 velocityPlaneProjection = Vector3.ProjectOnPlane(body.velocity, groundHit.normal);
         float speedAlongFloor = Vector2.Dot(body.velocity, velocityPlaneProjection.normalized);
         float friction = groundFriction * speedAlongFloor * speedAlongFloor;
-        body.AddForce(-velocityPlaneProjection.normalized * friction);
+        float floorAngleDot = Vector2.Dot(groundHit.normal, Vector2.up); // Reduce friction on slopes
+        float angleMultiplier = floorAngleDot <= 0f ? 1f : floorAngleDot; // Reduce friction on slopes
+        body.AddForce(friction * angleMultiplier * -velocityPlaneProjection.normalized);
+        // body.AddForce(friction * -velocityPlaneProjection.normalized);
+        
         // float friction = minFriction + groundFriction * speedAlongFloor * speedAlongFloor;
         // friction = Mathf.Min(friction, speedAlongFloor);
         // body.velocity += -velocityPlaneProjection.normalized * friction;
@@ -224,6 +244,7 @@ public class PlayerController : MonoBehaviour
         // if (!GroundCheck()) return false;
         if (body.velocity.magnitude >= maxRestingVelocity) return false;
         
+        waitingToRest = false;
         currentAirShotAmount = 0;
         return true;
     }
@@ -288,6 +309,15 @@ public class PlayerController : MonoBehaviour
     {
         public Abilities ability;
         public float value;
+    }
+    
+    // Ignore collision for a certain amount of time after shooting the first shot to prevent
+    // locking input if a wall is hit in the first couple of frames
+    private IEnumerator InputLockCollisionIgnoreTimer()
+    {
+        ignoreCollision = true;
+        yield return new WaitForSecondsRealtime(collisionIgnoreTime);
+        ignoreCollision = false;
     }
 }
 
