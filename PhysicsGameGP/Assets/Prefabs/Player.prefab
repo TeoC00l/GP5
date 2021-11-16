@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1433266385}
   - component: {fileID: 1433266388}
   - component: {fileID: 1433266387}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2520667273800661126}
   - component: {fileID: 2520667273800661127}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 5129874373658973498}
   - component: {fileID: 886781141456613587}
   - component: {fileID: 5757477813066255955}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -378,7 +378,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
   deactivateOnNextShot: 0
-  clearForceOnShoot: 0
   clearForceAmount: 0
 --- !u!114 &2520667274060324293
 MonoBehaviour:
@@ -394,7 +393,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
   deactivateOnNextShot: 0
-  clearForceOnShoot: 1
   clearForceAmount: 0
   range: 10
   blinkToLastMouseLocation: 0
@@ -421,7 +419,6 @@ MonoBehaviour:
   deactivateAfterTime: 0
   slowMoSpeed: 0.2
   timeLength: 0.2
-  clearForceOnShoot: 0
   clearForceAmount: 0
 --- !u!114 &2520667274060324295
 MonoBehaviour:
@@ -438,7 +435,6 @@ MonoBehaviour:
   deactivateOnShot: 0
   deactivateOnNextShot: 0
   blastMultiplier: 2
-  clearForceOnShoot: 0
   clearForceAmount: 0
 --- !u!114 &4440262443048832313
 MonoBehaviour:
@@ -454,6 +450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
   deactivateOnNextShot: 1
+  clearForceAmount: 0
 --- !u!114 &5129874373658973498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,7 +479,6 @@ MonoBehaviour:
   deactivateOnShot: 0
   deactivateOnNextShot: 0
   gravityMultiplier: 2
-  clearForceOnShoot: 0
   clearForceAmount: 0
 --- !u!114 &5757477813066255955
 MonoBehaviour:
@@ -515,7 +511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2520667274093016389}
   - component: {fileID: 2520667274093016390}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: ForceIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -656,7 +652,7 @@ GameObject:
   - component: {fileID: 2520667274133798733}
   - component: {fileID: 2520667274133798735}
   - component: {fileID: 2520667274133798734}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -739,7 +735,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2520667274318862351}
   - component: {fileID: 2520667274318862344}
-  m_Layer: 2
+  m_Layer: 3
   m_Name: Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
