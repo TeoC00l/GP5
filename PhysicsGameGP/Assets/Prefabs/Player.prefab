@@ -332,23 +332,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 0}
-  maxForce: 20
+  maxForce: 15
   force: {x: 0, y: 0}
   maxLength: 0.25
   maxAirShotAmount: 1
   lockInputUntilAtRest: 1
   maxRestingVelocity: 0.5
-  collisionIgnoreTime: 0.1
+  collisionIgnoreTime: 0.23
   playerMaterial: {fileID: 2100000, guid: 67c7f10e05e96e8438abe2dbab8d5afa, type: 2}
   playerlockedMaterial: {fileID: 2100000, guid: 36194d662f0f5534dbd8591f6f3c976d, type: 2}
   groundCheckDistance: 0.1
-  groundCheckRadius: 0.5
+  groundCheckRadius: 0.26
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 1
   maxGroundAngle: 45
   groundFriction: 1
-  useRandomAbilitySystem: 1
+  useRandomAbilitySystem: 0
   abilitiesInQueueAmount: 2
   abilityDrops:
   - ability: 0
@@ -669,7 +669,7 @@ Transform:
   m_GameObject: {fileID: 2520667274133798732}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1433266385}

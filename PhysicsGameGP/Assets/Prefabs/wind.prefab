@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4794563250235129611}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.99, y: -7.99, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -74,10 +74,10 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 10.425128, y: 6.1535773, z: 0}
-  - {x: 14.174872, y: 6.153578, z: 0}
-  - {x: 14.174872, y: 2.1864228, z: 0}
-  - {x: 10.425128, y: 2.1864223, z: 0}
+  - {x: -1.8748724, y: 1.9835774, z: 0}
+  - {x: 1.874872, y: 1.9835778, z: 0}
+  - {x: 1.8748724, y: -1.9835774, z: 0}
+  - {x: -1.874872, y: -1.9835778, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -169,7 +169,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4794563250512131715}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 12.3, y: 4.17, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -211,7 +211,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 1
   m_UsedByComposite: 0
-  m_Offset: {x: -2.790402, y: -3.1706321}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -237,7 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usePause: 1
-  pauseTimeInSeconds: 2
+  pauseTimeInSeconds: 3
   runTimeInSeconds: 4
 --- !u!1 &4794563251429324585
 GameObject:
