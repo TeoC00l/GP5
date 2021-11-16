@@ -3,14 +3,16 @@ using System.Collections;
 using System.Numerics;
 using UnityEngine;
 using UnityEngine.U2D;
+using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 [RequireComponent(typeof(AreaEffector2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 
 public class Wind : MonoBehaviour
 {
-    [SerializeField] private float windMagnitude;
+    [SerializeField] private bool usePause;
     [SerializeField] private float pauseTimeInSeconds;
     [SerializeField] private float runTimeInSeconds;
 
@@ -26,26 +28,29 @@ public class Wind : MonoBehaviour
 
     
     private bool hitPlayer;
-    private float currentWindMagnitude;
-    
-    private Vector2[] intersectionPoints;
 
+    private Vector2 back;
+    private Vector2 front;
+    private float frontToBackDistance;
+    private Vector2[] intersectionPoints;
+    private float cachedMagnitude;
+
+    #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (boxCollider)
-        {
-            return;
-        }
-        
-        boxCollider = GetComponent<BoxCollider2D>();
-        boxCollider.usedByEffector = true;
-        boxCollider.isTrigger = true;
-        
-        
+        OnStart();
     }
+    #endif
 
-    void Start()
+    void OnStart()
     {
+        if (!boxCollider)
+        {
+            boxCollider = GetComponent<BoxCollider2D>();
+            boxCollider.usedByEffector = true;
+            boxCollider.isTrigger = true;        
+        }
+
         Vector2 size = GetComponent<BoxCollider2D>().size;
         range = size.x;
         height = size.y;
@@ -54,15 +59,33 @@ public class Wind : MonoBehaviour
         boxLineRenderer = renderers[0];
         directionLineRenderer = renderers[1];
         boxLineRenderer.loop = true;
-        boxLineRenderer.startWidth = 0.2f;
-        boxLineRenderer.endWidth = 0.2f;
-        directionLineRenderer.startColor = Color.red;
-        directionLineRenderer.endColor = Color.green;
-        directionLineRenderer.startWidth = 0.6f;
-        directionLineRenderer.endWidth = 0.1f;
+        Color lineColor = Color.white;
+        lineColor.a = 0.3f;
+        boxLineRenderer.endColor = lineColor;
+        boxLineRenderer.startColor = lineColor;
+        boxLineRenderer.startWidth = 0.05f;
+        boxLineRenderer.endWidth = 0.05f;
+        Color endColor = Color.cyan;
+        endColor.a = 0.03f;
+        directionLineRenderer.startColor = Color.cyan;
+        directionLineRenderer.endColor = endColor;
+        directionLineRenderer.startWidth = size.y;
+        directionLineRenderer.endWidth = size.y;
         
         effector = GetComponent<AreaEffector2D>();
+        effector.forceAngle = transform.rotation.eulerAngles.z;
+
         hitPlayer = false;
+        
+                
+        CalculateCornerPoints();
+        DrawDebugLines();
+    }
+    
+    void Start()
+    {
+        OnStart();
+        cachedMagnitude = effector.forceMagnitude;
         StartCoroutine(Blow());
     }
 
@@ -78,20 +101,22 @@ public class Wind : MonoBehaviour
 
         return false;
     }
+    
+    
 
     IEnumerator Blow()
     {
         float timeActive = 0.0f;
+        DrawDebugLines();
+        effector.forceMagnitude = cachedMagnitude;
         
-
-
-        effector.forceMagnitude = windMagnitude;
-
         while (timeActive < runTimeInSeconds)
         {
             CheckForPlayer();
-
-            timeActive += Time.deltaTime;
+            if (usePause)
+            {
+                timeActive += Time.deltaTime;
+            }
             yield return null;
         }
 
@@ -100,17 +125,13 @@ public class Wind : MonoBehaviour
 
     IEnumerator OnPause()
     {
+        ClearRenderers();
         effector.forceMagnitude = 0f;
 
+        Debug.Log("yo");
         yield return new WaitForSeconds(pauseTimeInSeconds);
         
         StartCoroutine(Blow());
-    }
-
-    private void Update()
-    {
-        DrawDebugLines();
-
     }
 
     void DrawDebugLines()
@@ -119,12 +140,14 @@ public class Wind : MonoBehaviour
         float radians = degrees * Mathf.Deg2Rad;
 
         Vector2 dir = (new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)).normalized);
-        Vector2 start = ( (Vector2) transform.localPosition ) + boxCollider.offset;
-        Vector2 end = (Vector2) transform.localPosition + (dir * range);
-
+        Vector2 start = (Vector2) boxCollider.bounds.center;
+        Vector2 end = (Vector2) start + (dir * range);
+        
+        this.start = start;
+        
         directionLineRenderer.positionCount = 2;
-        directionLineRenderer.SetPosition(0, start);
-        directionLineRenderer.SetPosition(1, end);
+        directionLineRenderer.SetPosition(0, back);
+        directionLineRenderer.SetPosition(1, front);
 
         Vector2[] corners = CalculateCornerPoints();
 
@@ -136,7 +159,6 @@ public class Wind : MonoBehaviour
         }
 
         Vector2[] intersectionPoints = new Vector2[4];
-        float[] pointDistances = new float[4];
 
         //Get intersection points
         for (int i = 0; i < intersectionPoints.Length; i++)
@@ -153,25 +175,43 @@ public class Wind : MonoBehaviour
 
         this.start = start;
         this.intersectionPoints = intersectionPoints;
-        this.intersectionPosition = FindClosestPoint(start, dir, intersectionPoints);
+        Vector2[] closestPoints = FindClosestPoint((boxCollider.bounds.center), dir, intersectionPoints);
+        FindForwardIntersection(dir, closestPoints, start);
     }
 
     Vector2[] CalculateCornerPoints()
     {
         Vector2 size = boxCollider.size;
-        Vector2 center = (Vector2) transform.localPosition + boxCollider.offset;
+        Vector2 center = (Vector2)boxCollider.bounds.center;
 
-        float top = center.y + size.y / 2f;
-        float btm = center.y - size.y / 2f;
-        float left = center.x - size.x / 2f;
-        float right = center.x + size.x / 2f;
-        
+        float top = 0 + (size.y / 2f);
+        float btm = 0 - (size.y / 2f);
+        float left = 0 - (size.x / 2f);
+        float right = 0 + (size.x / 2f);
+
         Vector2[] corners = new Vector2[4];
         
-        corners[0] = new Vector2(right, top);
-        corners[1] = new Vector2(right, btm);
-        corners[2] = new Vector2(left, btm);
-        corners[3] = new Vector2(left, top);
+        Vector3 vec = new Vector2(right, top);
+        Quaternion rotation = transform.rotation;
+        vec = rotation * vec;
+        vec += (Vector3) center;
+        corners[0] = (Vector2) vec;
+        
+        vec = new Vector2(right, btm);
+        vec = rotation * vec;
+        vec += (Vector3) center;
+        corners[1] = vec;
+        
+        vec = new Vector2(left, btm);
+        vec = rotation * vec;
+        vec += (Vector3) center;
+        corners[2] = vec;
+
+        
+        vec = new Vector2(left, top);
+        vec = rotation * vec;
+        vec += (Vector3) center;
+        corners[3] = vec;
 
         return corners;
     }
@@ -210,64 +250,61 @@ public class Wind : MonoBehaviour
         return intersectPoint;
     }
 
-    Vector2 FindClosestPoint(Vector2 start, Vector2 dir, Vector2[] points)
+    Vector2[] FindClosestPoint(Vector2 start, Vector2 dir, Vector2[] points)
     {
-        Vector2 closestPoint = Vector2.zero;
+        Vector2[] closestPoints = new Vector2[2];
         float closestPointDistance = 0f;
 
-        for (int i = 0; i < intersectionPoints.Length ; i++)
+        for (int i = 0; i < intersectionPoints.Length; i++)
         {
+
             if (intersectionPoints[i] == Vector2.zero)
             {
                 continue;
             }
 
-            if (closestPoint == Vector2.zero)
+            if (closestPoints[0] == Vector2.zero)
             {
-                closestPoint = intersectionPoints[i];
+                closestPoints[0] = intersectionPoints[i];
                 closestPointDistance = Vector2.Distance(intersectionPoints[i], start);
                 continue;
             }
 
             float distance = Vector2.Distance(intersectionPoints[i], start);
-
-            if (distance <= closestPointDistance)
+            float dif = Mathf.Abs(distance - closestPointDistance);
+            
+            if (dif > 0.05f && distance < closestPointDistance)
             {
-                closestPoint = intersectionPoints[i];
-                closestPointDistance = distance;
+                closestPoints[0] = intersectionPoints[i];
+                closestPointDistance = Vector2.Distance(intersectionPoints[i], start);
+
+            }
+            else if (dif < 0.05f)
+            {
+                closestPoints[1] = intersectionPoints[i];
             }
         }
-
-        intersectionPosition = closestPoint;
         
-        return intersectionPosition;
+        
+        return closestPoints;
     }
 
-    Vector2 FindForwardIntersection(Vector2 ForwardVector, Vector2[] points)
+    void FindForwardIntersection(Vector2 ForwardVector, Vector2[] points, Vector2 start)
     {
-        Vector2 biggestDot = Vector2.zero;
-        float thatDot = 0f;
-        
-        for (int i = 0; i < intersectionPoints.Length; i++)
+        Vector2 toTarget = (points[0] - start).normalized;
+
+        if (Vector2.Dot(ForwardVector, toTarget) > 0)
         {
-            float dot = Vector2.Dot(ForwardVector.normalized, points[i].normalized);
-
-            if (biggestDot == Vector2.zero)
-            {
-                biggestDot = intersectionPoints[i];
-                thatDot = dot;
-                continue;
-            }
-
-            if (dot < thatDot)
-            {
-                biggestDot = intersectionPoints[i];
-                thatDot = dot;
-                continue;
-            }
+            front = points[0];
+            back = points[1];
+        }
+        else
+        {
+            front = points[1];
+            back = points[0];
         }
 
-        return biggestDot;
+        frontToBackDistance = Vector2.Distance(front, back);
     }
 
     bool IsParallel(Vector2 v1, Vector2 v2)
@@ -280,9 +317,8 @@ public class Wind : MonoBehaviour
 
         return false;
     }
-    
-#if UNITY_EDITOR
-    private void OnDrawGizmos()
+
+    void DrawIntersectionPoints()
     {
         if (intersectionPoints == null)
         {
@@ -295,11 +331,65 @@ public class Wind : MonoBehaviour
             Gizmos.DrawSphere(intersectionpoint, 0.2f);
         }
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(intersectionPosition, 0.6f);
+        Gizmos.DrawSphere(front, 0.6f);
+
+        Vector2 center = boxCollider.bounds.center;
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(center, 1f);
+        
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(Vector3.zero, 1f);
+
         
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(start, 0.6f);
+        Gizmos.DrawSphere(back, 0.6f);
+        
+        Gizmos.color = Color.white;
+        
+        for (int i = 0; i < intersectionPoints.Length; i++)
+        {
+            if (i == intersectionPoints.Length - 1)
+            {
+                Gizmos.DrawLine(intersectionPoints[i], intersectionPoints[0]);
+                break;
+            }
+            Gizmos.DrawLine(intersectionPoints[i], intersectionPoints[i+1]);
+        }
+    }
 
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        SetMagnitude(other);
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.transform.CompareTag("Player"))
+        {
+            SetMagnitude(other);
+        }
+    }
+
+    private void SetMagnitude(Collision2D other)
+    {
+        Vector2 position = other.collider.bounds.center;
+        float distance = Vector2.Distance(position, back);
+        float t = distance / frontToBackDistance;
+        float strength = Mathf.Lerp((cachedMagnitude * 0.1f),cachedMagnitude, t);
+        effector.forceMagnitude = strength;
+    }
+
+    private void ClearRenderers()
+    {
+        boxLineRenderer.positionCount = 0;
+        directionLineRenderer.positionCount = 0;
+    }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        
     }
 #endif
 
