@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     private Player player;
     private Rigidbody2D body;
+    private Rigidbody2D connectedBody;
     private IndicatorManager indicatorManager;
     
     [Header("Respawn")]
@@ -88,6 +89,8 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(GroundCheck());
+        
         if (lockInputUntilAtRest)
         {
             if ((!waitingToRest && currentAirShotAmount < maxAirShotAmount && !GroundCheck()) || 
@@ -134,8 +137,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (!ignoreCollision)
-            waitingToRest = true;
+        if (!other.gameObject.CompareTag("Player"))
+            if (!ignoreCollision)
+                waitingToRest = true;
     }
 
     private void Input()

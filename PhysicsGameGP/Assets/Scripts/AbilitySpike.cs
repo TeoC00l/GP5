@@ -45,7 +45,6 @@ public class AbilitySpike : Ability
 
     protected override void OnExecute()
     {
-        Debug.Log("Spike OnExecute");
         spikesActive = true;
         body.gravityScale = 0f;
         body.velocity = Vector2.zero;
@@ -62,7 +61,6 @@ public class AbilitySpike : Ability
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        Debug.Log("Spike OnCollisionEnter2D");
         if (isActive)
         {
             OnExecute();
