@@ -113,6 +113,12 @@ public class PlayerController : MonoBehaviour
         {
             indicatorManager.DisableIndicators();
         }
+        
+        if (InputController.ResetRequested)
+        {
+            body.MovePosition(spawnPosition.position);
+            body.velocity = Vector2.zero;
+        }
     }
 
     private void FixedUpdate()
@@ -170,12 +176,6 @@ public class PlayerController : MonoBehaviour
                     currentAbility.OnShoot();
                 }
             }
-        }
-
-        if (InputController.ResetRequested)
-        {
-            body.MovePosition(spawnPosition.position);
-            body.velocity = Vector2.zero;
         }
     }
 
