@@ -48,6 +48,7 @@ public class AbilitySpike : Ability
         spikesActive = true;
         body.gravityScale = 0f;
         body.velocity = Vector2.zero;
+        playerController.SetIsTempGrounded(true);
         playerController.ResetCurrentAirShotAmount();
     }
 
