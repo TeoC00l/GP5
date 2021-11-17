@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f739e8a679056f4a81ca83e5b65e113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usePause: 1
+  usePause: 0
   pauseTimeInSeconds: 3
   runTimeInSeconds: 4
 --- !u!1 &4794563251429324585
