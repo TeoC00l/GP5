@@ -91,30 +91,14 @@ public class Wind : MonoBehaviour
         StartCoroutine(Blow());
     }
 
-    bool CheckForPlayer()
-    {
-        RaycastHit2D hit;
-
-        float degrees = transform.rotation.z;
-        float radians = degrees * Mathf.Deg2Rad;
-
-        Vector2 dir = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
-        Vector2 end = (Vector2) transform.position + (dir * range);
-
-        return false;
-    }
-
-
     IEnumerator Blow()
     {
         isBlowing = true;
         float timeActive = 0.0f;
         DrawDebugLines();
-        //effector.forceMagnitude = cachedMagnitude;
 
         while (timeActive < runTimeInSeconds)
         {
-            CheckForPlayer();
             if (usePause)
             {
                 timeActive += Time.deltaTime;
@@ -323,9 +307,7 @@ public class Wind : MonoBehaviour
     private void Update()
     {
         blocked = IsBlocked();
-
-        Debug.Log(blocked);
-
+        
         if (player)
         {
             if (boxCollider.IsTouching(player))
@@ -352,7 +334,7 @@ public class Wind : MonoBehaviour
             Gizmos.DrawSphere(intersectionpoint, 0.2f);
         }
 
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawSphere(front, 0.6f);
 
         Vector2 center = boxCollider.bounds.center;
@@ -364,7 +346,7 @@ public class Wind : MonoBehaviour
         Gizmos.DrawSphere(Vector3.zero, 1f);
 
 
-        Gizmos.color = Color.green;
+        Gizmos.color = Color.red;
         Gizmos.DrawSphere(back, 0.6f);
 
         Gizmos.color = Color.white;
@@ -385,6 +367,8 @@ public class Wind : MonoBehaviour
     {
         if (other.transform.CompareTag("Player"))
         {
+            blocked = IsBlocked();
+            
             if (!player)
             {
                 player = other.GetComponent<CircleCollider2D>();
@@ -398,8 +382,14 @@ public class Wind : MonoBehaviour
     {
         if (blocked)
         {
+            Debug.Log("blocked");
             effector.forceMagnitude = 0;
             return;
+        }
+        else
+        {
+            Debug.Log("NOT BLOCKED");
+
         }
         
         if (!isBlowing)
@@ -422,17 +412,27 @@ public class Wind : MonoBehaviour
 
     bool IsBlocked()
     {
-        // Bit shift the index of the layer (8) to get a bit mask
+        //Bit shift the index of the layer (8) to get a bit mask
         int layerMask = 1 << 2;
         layerMask = ~layerMask;
 
         RaycastHit2D hit;
-        
-        hit = Physics2D.CircleCast(back, boxCollider.bounds.size.x / 4, (front - back).normalized, frontToBackDistance,
-            layerMask);
+        Vector2 size = new Vector2(boxCollider.size.y, boxCollider.size.x/30);
+        Vector2 forwardVector = (front - back).normalized;
+        Vector2 origin = back + (forwardVector * size.y);
+        Vector2 end = front - (forwardVector * (size.y * 2));
+
+
+
+        hit = Physics2D.BoxCast(origin, size, transform.eulerAngles.z +90f, forwardVector,
+            frontToBackDistance-(size.y*2), layerMask);
+
+        Debug.DrawLine(origin, hit.point, Color.red);
 
         if (hit)
         {
+            
+            Debug.Log(hit.transform.name);
             if (hit.transform.CompareTag("Player"))
             {
                 return false;
@@ -442,6 +442,10 @@ public class Wind : MonoBehaviour
                 return true;
             }
         }
+        else
+        {
+            Debug.Log("No hit");
+        }
 
         return false;
     }
@@ -450,7 +454,7 @@ public class Wind : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-
+        DrawIntersectionPoints();
     }
 #endif
 }
