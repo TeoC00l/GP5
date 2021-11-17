@@ -9,7 +9,12 @@ public class PlayerController : MonoBehaviour
     private Player player;
     private Rigidbody2D body;
     private Rigidbody2D connectedBody;
+    private Rigidbody2D previousConnectedBody;
     private IndicatorManager indicatorManager;
+
+    private bool isConnectedToBody = false;
+    private bool ignoreConnectedBodyMovement = false;
+    private float connectedBodyIgnoreTime = 0.2f; // Hardcoded
     
     [Header("Respawn")]
     [SerializeField] private Transform spawnPosition = default;
@@ -49,6 +54,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxGroundAngle = 45f;
     
     private RaycastHit2D groundHit;
+    private bool isTempGrounded = false;
+    public void SetIsTempGrounded(bool value) { isTempGrounded = value; }
     
     [Header("Friction")]
     [SerializeField] private float groundFriction = 0f;
@@ -65,6 +72,9 @@ public class PlayerController : MonoBehaviour
     private Ability currentAbility;
     private Ability previousAbility;
     
+    private Vector2 connectionWorldPosition;
+    private Vector2 connectionVelocity;
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
@@ -89,12 +99,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(GroundCheck());
-        
         if (lockInputUntilAtRest)
         {
-            if ((!waitingToRest && currentAirShotAmount < maxAirShotAmount && !GroundCheck()) || 
-                (RestingCheck() && GroundCheck()))
+            if (RestingCheck() && GroundCheck() ||
+                !waitingToRest && currentAirShotAmount < maxAirShotAmount && !GroundCheck() ||
+                isConnectedToBody && GroundCheck())
             {
                 playerRenderer.material = playerMaterial;
                 Input();
@@ -132,14 +141,28 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         if (GroundCheck())
+        {
+            if (!ignoreConnectedBodyMovement)
+                ConnectedBodyMovement(); 
+            else
+                ClearConnectedBody();
             GroundFriction();
+        }
+        else
+        {
+            previousConnectedBody = null;
+            connectionVelocity = Vector2.zero;
+            connectionWorldPosition = Vector2.zero;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.CompareTag("Player"))
+        {
             if (!ignoreCollision)
                 waitingToRest = true;
+        }
     }
 
     private void Input()
@@ -179,18 +202,19 @@ public class PlayerController : MonoBehaviour
                 previousAbility.OnDeactivate();
             previousAbility = currentAbility;
             
-            //TODO: GroundCheck skip or true when spiked to a wall
             if (GroundCheck())
             {
-                basicAbility.OnShoot();
+                isTempGrounded = false;
+                StartCoroutine(ConnectedBodyIgnoreTimer());
                 StartCoroutine(InputLockCollisionIgnoreTimer());
-            } else 
+                basicAbility.OnShoot();
+            } else if (currentAirShotAmount < maxAirShotAmount)
             {
-                if (currentAirShotAmount < maxAirShotAmount)
-                {
-                    currentAirShotAmount++;
-                    currentAbility.OnShoot();
-                }
+                currentAirShotAmount++;
+                isTempGrounded = false;
+                StartCoroutine(ConnectedBodyIgnoreTimer());
+                StartCoroutine(InputLockCollisionIgnoreTimer());
+                currentAbility.OnShoot();
             }
         }
     }
@@ -224,8 +248,58 @@ public class PlayerController : MonoBehaviour
         // body.velocity += -velocityPlaneProjection.normalized * friction;
     }
 
+    private void ConnectedBodyMovement()
+    {
+        if (Vector2.Dot(groundHit.normal, Vector2.up) <= maxGroundAngle * Mathf.Rad2Deg &&
+            !groundHit.collider.gameObject.TryGetComponent(out connectedBody))
+        {
+            ClearConnectedBody();
+            return;
+        }
+        
+        if (connectedBody)
+        {
+            if (connectedBody.isKinematic || connectedBody.mass >= body.mass)
+            {
+                UpdateConnectionState();
+            }
+        }
+    }
+
+    private void ClearConnectedBody()
+    {
+        previousConnectedBody = null;
+        connectionVelocity = Vector2.zero;
+        connectionWorldPosition = Vector2.zero;
+        isConnectedToBody = false;
+    }
+
+    private void UpdateConnectionState()
+    {
+        if (connectedBody == previousConnectedBody)
+        {
+            isConnectedToBody = true;
+            
+            Vector3 connectionMovement =
+                connectedBody.position - connectionWorldPosition;
+            connectionVelocity = connectionMovement / Time.deltaTime;
+        }
+        connectionWorldPosition = connectedBody.position;
+        
+        Vector2 relativeVelocity = body.velocity - connectionVelocity;
+        float currentX = Vector2.Dot(relativeVelocity, Vector2.left);
+        body.velocity += new Vector2(currentX, 0f);
+        previousConnectedBody = connectedBody;
+    }
+
     private bool GroundCheck()
     {
+        if (isTempGrounded)
+        {
+            currentAirShotAmount = 0; 
+            return true;
+        }
+        
         RaycastHit2D hit = Physics2D.CircleCast(body.position, groundCheckRadius, 
             Vector2.down, groundCheckDistance, groundCheckMask);
         if (hit && Mathf.Atan2(hit.normal.y, hit.normal.x) > maxGroundAngle * Mathf.Deg2Rad)
@@ -233,6 +307,7 @@ public class PlayerController : MonoBehaviour
             groundHit = hit;
             if (!lockInputUntilAtRest)
                 currentAirShotAmount = 0;
+            
             return true;
         }
         return false;
@@ -241,8 +316,10 @@ public class PlayerController : MonoBehaviour
     private bool RestingCheck()
     {
         //TODO: if wallstuck by using spike groundcheck will be false, fix
-        // if (!GroundCheck()) return false;
-        if (body.velocity.magnitude >= maxRestingVelocity) return false;
+        if (!(GroundCheck() || isTempGrounded))
+            if ((isConnectedToBody ? body.velocity.magnitude - connectionVelocity.magnitude : body.velocity.magnitude) 
+                >= maxRestingVelocity)
+                return false;
         
         waitingToRest = false;
         currentAirShotAmount = 0;
@@ -318,6 +395,13 @@ public class PlayerController : MonoBehaviour
         ignoreCollision = true;
         yield return new WaitForSecondsRealtime(collisionIgnoreTime);
         ignoreCollision = false;
+    }
+
+    private IEnumerator ConnectedBodyIgnoreTimer()
+    {
+        ignoreConnectedBodyMovement = true;
+        yield return new WaitForSecondsRealtime(connectedBodyIgnoreTime);
+        ignoreConnectedBodyMovement = false;
     }
 }
 
