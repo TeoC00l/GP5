@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4794563250235129608}
   - component: {fileID: 4794563250235129609}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: RenderObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 4794563250512131718}
   - component: {fileID: 4794563250512131713}
   - component: {fileID: 4794563250512131712}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: wind
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4794563251429324590}
   - component: {fileID: 4794563251429324591}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: RenderObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
