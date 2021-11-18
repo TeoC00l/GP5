@@ -337,26 +337,26 @@ MonoBehaviour:
   maxLength: 0.25
   maxAirShotAmount: 1
   lockInputUntilAtRest: 1
-  maxRestingVelocity: 0.5
-  collisionIgnoreTime: 0.23
+  maxRestingVelocity: 2
+  collisionIgnoreTime: 0.2
   playerMaterial: {fileID: 2100000, guid: 67c7f10e05e96e8438abe2dbab8d5afa, type: 2}
   playerlockedMaterial: {fileID: 2100000, guid: 36194d662f0f5534dbd8591f6f3c976d, type: 2}
-  groundCheckDistance: 0.1
+  groundCheckDistance: 0.01
   groundCheckRadius: 0.26
   groundCheckMask:
     serializedVersion: 2
     m_Bits: 1
   maxGroundAngle: 45
   groundFriction: 1
-  useRandomAbilitySystem: 0
+  useRandomAbilitySystem: 1
   abilitiesInQueueAmount: 2
   abilityDrops:
   - ability: 0
-    value: 50
+    value: 80
   - ability: 1
-    value: 10
+    value: 5
   - ability: 2
-    value: 10
+    value: 5
   - ability: 3
     value: 10
   - ability: 4
@@ -418,8 +418,8 @@ MonoBehaviour:
   deactivateOnShot: 1
   deactivateOnNextShot: 0
   deactivateAfterTime: 0
-  slowMoSpeed: 0.2
-  timeLength: 0.2
+  slowMoSpeed: 0.3
+  timeLength: 1
   clearForceAmount: 0
 --- !u!114 &2520667274060324295
 MonoBehaviour:
@@ -435,7 +435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
   deactivateOnNextShot: 0
-  blastMultiplier: 2
+  blastMultiplier: 1.8
   clearForceAmount: 0
 --- !u!114 &4440262443048832313
 MonoBehaviour:
@@ -479,7 +479,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deactivateOnShot: 0
   deactivateOnNextShot: 0
-  gravityMultiplier: 2
+  gravityMultiplier: 5
   clearForceAmount: 0
 --- !u!114 &5757477813066255955
 MonoBehaviour:
@@ -496,7 +496,7 @@ MonoBehaviour:
   deactivateOnShot: 0
   deactivateOnNextShot: 0
   range: 2
-  groundCheckDistance: 0.1
+  groundCheckDistance: 0.01
   groundCheckRadius: 0.5
   groundCheckMask:
     serializedVersion: 2
